@@ -11,6 +11,21 @@ Newest first.
 
 ---
 
+## [0.2.1] 2026-10-16
+
+Lets a brain keep its own index sections, and stops the checker flagging skill links in a brain whose skills are installed in an AI app.
+
+**Why:** moving a real brain showed two false alarms that would come back on every lint. An index grouped by the owner's own sections, such as work in progress, reference, was always flagged as not following the domains. And with `skills: installed`, links like `[[ingest]]` were reported as broken, because there's no skill file in the folder.
+
+**Apply:**
+
+1. In the rules file's "Index format" section, replace the first sentence with the one from the template's `BRAIN.md` that starts "Organized by domain, one section per domain, unless". If this brain's index uses its own sections, add the `### Index sections` table it describes.
+2. If the frontmatter says `skills: installed`, add the sentence from the template's `BRAIN.md` that ends "still count as skill links.", and make sure that table in `CLAUDE.md` names each installed skill in its first column.
+3. Replace `skills/lint/tools/vault_check.py` and `skills/lint/tools/test_vault_check.py` with the template's versions, then run `python3 -B skills/lint/tools/test_vault_check.py`.
+4. Set `template_version` to `0.2.1`.
+
+---
+
 ## [0.2.0] 2026-10-16
 
 Adds a guide for moving an existing brain onto the template, lets a brain keep its skills installed in an AI app, and gives a brain a place for checks of its own.

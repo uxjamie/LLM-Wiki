@@ -350,6 +350,37 @@ finally:
     shutil.rmtree(tpl)
 
 
+# ── skills installed in an app, and index sections the owner chose ────────
+inst = tempfile.mkdtemp(prefix='llmwiki-inst-')
+try:
+    rules = ('---\nllm-wiki: rules\nbrain: "Beacon"\ntemplate_version: 0.2.1\nskills: installed\n---\n\n'
+             '# Beacon\n\n### Domains\n\n| D | W |\n|---|---|\n| `tools` | x |\n| `people` | x |\n| `system` | x |\n\n'
+             '## Index format\n\n### Index sections\n\n| Section | Holds |\n|---|---|\n'
+             '| `Work in progress` | live work |\n| `Reference` | lookups |\n')
+    build(inst, {
+        'BEACON.md': rules,
+        'CLAUDE.md': ('Read `BEACON.md` first.\n\n## When to use each skill\n\n| Skill | Use it when | Where |\n'
+                      '|---|---|---|\n| ingest | a source arrives | installed in the app |\n'
+                      '| `lint` | health check | installed in the app |\n'),
+        'wiki/index.md': ('---\ntitle: "Index"\ntags: [system]\nstatus: evergreen\naudience: [internal]\n'
+                          'date_updated: 2026-10-01\n---\n\n# Index\n\n## Work in progress\n\n'
+                          '- [[Tools — Plan]] — the plan\n\n## Reference\n\n- [[People — Ada]] — a person\n\n'
+                          '## Stray\n\n'),
+        'wiki/Tools — Plan.md': page('Tools — Plan', body='Run [[ingest]] then [[lint]]. Not [[courier]].'),
+        'wiki/People — Ada.md': page('People — Ada', tags='[people]', body='See [[Tools — Plan]].'),
+    })
+    vi = vc.Vault(inst, 'BEACON.md')
+    ib, _, _, _, _ = vc.check_links(vi)
+    ii = vc.check_index(vi)
+    ok('installed skills named in the adapter table resolve', not has(ib, '[[ingest]]') and not has(ib, '[[lint]]'), ib)
+    ok('a skill missing from the table is still broken', has(ib, 'courier'), ib)
+    ok('declared index sections pass', not has(ii, 'Work in progress') and not has(ii, '"Reference"'), ii)
+    ok('an undeclared section is still flagged', has(ii, '"Stray" is not a declared domain'), ii)
+    ok('a page in a declared section is not called misplaced', not has(ii, 'but its domain is'), ii)
+finally:
+    shutil.rmtree(inst)
+
+
 # ── a check before a migration: other folder name, no marker yet ──────────
 pre = tempfile.mkdtemp(prefix='llmwiki-pre-')
 try:

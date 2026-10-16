@@ -213,6 +213,17 @@ def section(text, title_rx):
     return None if out is None else '\n'.join(out)
 
 
+def first_cells(sec):
+    """First cell of each body row of every table in sec, backticks removed."""
+    cells = []
+    for line in (sec or '').split('\n'):
+        s = line.strip()
+        if not s.startswith('|') or re.match(r'^\|[\s:|-]+\|?$', s):
+            continue
+        cells.append(s.strip('|').split('|')[0].strip().strip('`').strip())
+    return cells[1:] if cells else []                  # the first row is the header
+
+
 def table_keys(sec):
     """First backticked token in the first cell of each table row."""
     keys = set()
@@ -236,12 +247,24 @@ class Vault:
         self.statuses = self._declared(r'^Statuses\b', DEFAULT_STATUSES)
         self.audiences = self._declared(r'^Audiences\b', DEFAULT_AUDIENCES)
         self.domains.add('system')
+        # Optional: index sections the owner chose instead of one per domain.
+        self.index_sections = table_keys(section(self.rules_text, r'^Index sections\b'))
+        self.skills_mode = unquote((rfm or {}).get('skills')) or 'folder'
         self.wiki = os.path.join(root, WIKI)
         self.pages = sorted(nfc(f) for f in os.listdir(self.wiki) if f.endswith('.md'))
         self.skills = set()
         sk = os.path.join(root, 'skills')
         if os.path.isdir(sk):
             self.skills = {d for d in os.listdir(sk) if os.path.isfile(os.path.join(sk, d, 'SKILL.md'))}
+        # Names a [[skill]] link may use. With `skills: installed` the skills live in an
+        # AI app, so their names come from the adapters' "When to use each skill" table.
+        self.skill_links = set(self.skills)
+        if self.skills_mode == 'installed':
+            for a in ('CLAUDE.md', 'AGENTS.md'):
+                if not os.path.isfile(os.path.join(root, a)):
+                    continue
+                sec = section(read(os.path.join(root, a)), r'^When to use each skill\b')
+                self.skill_links |= {c for c in first_cells(sec) if re.fullmatch(r'[\w.-]+', c)}
         # Every file a [[link]] could resolve to, by name with and without .md.
         # Pages in wiki/ win over same-named files elsewhere. Working copies under
         # outputs/_* (snapshots, setup leftovers, files waiting to be deleted) are
@@ -430,7 +453,7 @@ def resolve(v, target):
         return 'placeholder', None
     if not t or t.endswith(('—', '-', '–')) or re.fullmatch(r'[\s—–-]*', t):
         return 'empty', None
-    if t in v.skills:
+    if t in v.skill_links:
         return 'skill', None
     base = t.split('/')[-1]
     for key in (t, base, t + '.md', base + '.md'):
@@ -489,6 +512,7 @@ def check_index(v):
     def key(s):
         return re.sub(r'[\s_-]+', ' ', s).strip().lower()
     domain_by_section = {key(d): d for d in v.domains}
+    own_sections = {key(s) for s in v.index_sections}
     page_domain = {}
     for p in v.pages:
         fm, _ = frontmatter(v.text[p])
@@ -499,9 +523,10 @@ def check_index(v):
         h = re.match(r'^##\s+(.*?)\s*$', line)
         if h:
             current = h.group(1).strip()
-            if key(current) not in domain_by_section:
+            if key(current) not in domain_by_section and key(current) not in own_sections:
                 out.append(f'index.md:{i}: section "{current}" is not a declared domain '
-                           f'(sections follow the Domains table)')
+                           f'(sections follow the Domains table, or an Index sections table '
+                           f'in {v.rules_file})')
             continue
         if not line.lstrip().startswith('- [['):
             continue
@@ -761,7 +786,8 @@ def main(argv=None):
     total = sum(len(items) for _, items in sections)
     name = v.brain if v.brain and not has_placeholder(v.brain) else '(not set up yet)'
     print(f'Vault check for {name}: rules file {v.rules_file}, {len(v.pages)} wiki pages, '
-          f'{len(v.skills)} skills, template {v.template_version or "?"}, as of {today}. '
+          f'{len(v.skill_links) if v.skills_mode == "installed" else len(v.skills)} skills'
+          f'{" (installed)" if v.skills_mode == "installed" else ""}, template {v.template_version or "?"}, as of {today}. '
           f'Report only, nothing changed.')
     for title, items in sections:
         print(f'\n{title}: {len(items) if items else "none"}')

@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.0
+template_version: 0.2.1
 skills: folder
 created: {{CREATED}}
 ---
@@ -102,7 +102,7 @@ The brain's procedures are plain instructions in `skills/<name>/SKILL.md`: `inge
 
 **Rule:** When running a skill, read its `SKILL.md` from this folder and follow it. If a copy of the skill was also installed in an AI app, this folder's copy wins.
 
-**Where the skills live is recorded in the frontmatter:** `skills: folder` (the default, as described above) or `skills: installed`. A brain moved onto this template from an older setup may keep its skills installed in an AI app instead. With `skills: installed`, the installed copies are the ones to follow, and changing a skill means giving {{OWNER_FIRST}} an updated file to install (see Template updates).
+**Where the skills live is recorded in the frontmatter:** `skills: folder` (the default, as described above) or `skills: installed`. A brain moved onto this template from an older setup may keep its skills installed in an AI app instead. With `skills: installed`, the installed copies are the ones to follow, and changing a skill means giving {{OWNER_FIRST}} an updated file to install (see Template updates). The "When to use each skill" table in `CLAUDE.md` and `AGENTS.md` names each installed skill, so links like [[ingest]] still count as skill links.
 
 A skill may carry helper scripts in `skills/<name>/tools/`, with their tests beside them. A helper reads rules from the file that owns them and never keeps its own copy. The first case is `skills/lint/tools/vault_check.py`, which reads the domain, status, and audience tables from this file on every run. Checks that only make sense for this brain go beside it in `skills/lint/tools/extra_checks.py`, and lint runs both.
 
@@ -226,7 +226,7 @@ Never present an inference as fact.
 
 ## Index format
 
-Organized by domain, one section per domain. Each entry sits on its own line:
+Organized by domain, one section per domain, unless {{OWNER_FIRST}} prefers other sections. In that case, list them in a table under a heading `### Index sections` in this section, each name in backticks in the first column, and the checker accepts them. Every page is still listed, whatever the sections. Each entry sits on its own line:
 
 `- [[Page Name]] — one-line summary *(N sources)*`
 

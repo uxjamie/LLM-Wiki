@@ -1,0 +1,28 @@
+{
+  "collapse-filter": false,
+  "search": "-path:raw -path:templates -path:skills -path:scripts -file:log",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    { "query": "file:\"People —\"", "color": { "a": 1, "rgb": 5431378 } },
+    { "query": "file:\"Ideas —\"", "color": { "a": 1, "rgb": 15105570 } },
+    { "query": "file:\"Projects —\"", "color": { "a": 1, "rgb": 2201331 } },
+    { "query": "file:\"Tools —\"", "color": { "a": 1, "rgb": 11751600 } },
+    { "query": "file:\"{{OWNER_FIRST}} —\"", "color": { "a": 1, "rgb": 16761095 } },
+    { "query": "path:outputs", "color": { "a": 1, "rgb": 10181046 } }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.2,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": false,
+  "centerStrength": 0.5,
+  "repelStrength": 12,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "close": true
+}

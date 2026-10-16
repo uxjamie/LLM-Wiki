@@ -1,0 +1,16 @@
+# macOS and Windows
+.DS_Store
+Thumbs.db
+
+# Obsidian state that is per-machine
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/workspaces.json
+.trash/
+
+# Python
+__pycache__/
+*.pyc
+
+# Built plugin packages (rebuild with scripts/package-plugin.sh)
+*.plugin

@@ -44,6 +44,14 @@ These are optional. Setup asks about each one.
 5. **Answer a few questions.** The AI asks what to call your brain, what it's for, and how you'd like pages grouped. Then it shows you the plan and waits for your yes before changing anything.
 6. **Add your first item.** Drop a file into the `raw` folder, or paste some text into the chat, and say "ingest this."
 
+## Already have a brain?
+
+If you built a wiki from Karpathy's idea file, or set one up some other way, you can bring it up to this template without starting over. Open your existing brain in your AI tool and type:
+
+> Follow the migration guide at https://github.com/uxjamie/LLM-Wiki/blob/main/MIGRATE.md
+
+Your AI looks through your brain first and changes nothing. It shows you one plan that keeps your own way of doing things wherever it works, makes a full backup copy, and then makes the changes in three steps you approve. Your pages, sources, and decisions stay.
+
 ## Everyday use
 
 You talk to your AI in plain words. These phrases work, and so do your own versions of them.
@@ -67,7 +75,8 @@ You talk to your AI in plain words. These phrases work, and so do your own versi
 | `templates/` | Starting shapes for common pages: a person, a meeting, a project, an idea, a summary of an article. |
 | `BRAIN.md` | The rules for your brain. Setup renames it after your brain, for example `ATLAS.md`. |
 | `CLAUDE.md`, `AGENTS.md` | Short notes AI tools read when they start. They point to the rules and list when to use each skill. `CLAUDE.md` is for Claude, `AGENTS.md` for other tools. |
-| `SETUP.md` | The setup interview. Filed away once setup is done. |
+| `SETUP.md` | The setup interview for a new brain. Filed away once setup is done. |
+| `MIGRATE.md` | The guide for bringing an existing brain up to this template. A new brain doesn't need it. |
 | `scripts/` | An optional helper for people who use git. |
 | `.obsidian/` | Ready-made settings for Obsidian. A hidden folder. Ignore it if you don't use Obsidian. |
 

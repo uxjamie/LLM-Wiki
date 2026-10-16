@@ -72,7 +72,8 @@ ADAPTERS = ['CLAUDE.md', 'AGENTS.md']
 TOP_DIRS = ('wiki', 'raw', 'skills', 'scripts', 'templates', 'outputs')
 SEP = ' — '
 STALL_DAYS = 30
-HUB_MIN = 5            # distinct linking pages before a page is a hub candidate
+HUB_MIN = 5            # distinct linking pages before a page is a hub candidate (small brains)
+HUB_SHOW = 10          # most hub candidates to list
 HUB_QUIET = 2          # a listed hub with fewer distinct linking pages has gone quiet
 
 # Fallbacks, used only when the rules file has lost a table (reported as a finding).
@@ -89,7 +90,7 @@ RULE_HOME_PATTERNS = [
     (re.compile(r'\bgit\s+(?:pull|push|commit|fetch|clone|add|reset|rebase|merge|init)\b'), 'git command'),
     (re.compile(r'/Users/|/home/\w|\b[A-Za-z]:\\(?=\w)|~/'), 'local path'),
     (re.compile(r'\bSettings\s*>\s*\w+'), 'app menu path'),
-    (re.compile(r'(?<![\w/-])[A-Z][A-Z0-9-]*\.md\b'), 'file name that may be the rules file'),
+    (re.compile(r'(?<![\w/-])[A-Z][A-Z0-9-]*\.md\b'), 'file name that exists nowhere in the brain (an old rules file name?)'),
 ]
 
 
@@ -145,9 +146,15 @@ LINK = re.compile(r'!?\[\[([^\]\n]*)\]\]')
 
 
 def links_in(text):
-    """Yield (line_no, raw, page_target, heading) for every wikilink outside code."""
-    for i, line in enumerate(strip_code(text).split('\n'), 1):
+    """Yield (line_no, raw, page_target, heading) for every wikilink outside code.
+    Fenced blocks are blanked. Inline code spans are skipped only when the link
+    sits inside one, so a link whose heading contains `code` still resolves."""
+    blanked = re.sub(r'```.*?```', lambda m: '\n' * m.group(0).count('\n'), text, flags=re.S)
+    for i, line in enumerate(blanked.split('\n'), 1):
+        spans = [s.span() for s in re.finditer(r'`[^`\n]*`', line)]
         for m in LINK.finditer(line):
+            if any(a <= m.start() < b for a, b in spans):
+                continue
             raw = m.group(1).replace('\\|', '|')          # [[Page\|label]] inside a table
             head = re.split(r'\|', raw, maxsplit=1)[0]
             target = re.split(r'[#^]', head, maxsplit=1)[0].strip()
@@ -257,7 +264,16 @@ class Vault:
         self.lower = {}
         for k in self.names:
             self.lower.setdefault(k.lower(), k)
-        self.text = {p: read(os.path.join(self.wiki, p)) for p in self.pages}  # nfc names open fine on macOS
+        self.text = {p: read(os.path.join(self.wiki, p)) for p in self.pages}
+        # System pages: the fixed four, plus any page whose first tag is `system`
+        # (an old archive, a plays page, a skill registry). They keep their own
+        # names, need no prefix, and are never orphans or required index entries.
+        self.system_pages = set(SYSTEM_FILES & set(self.pages))
+        for p in self.pages:
+            fm, _ = frontmatter(self.text[p])
+            tags = as_list((fm or {}).get('tags'))
+            if tags and tags[0] == 'system':
+                self.system_pages.add(p)  # nfc names open fine on macOS
         self.root_docs = [self.rules_file] + [d for d in ADAPTERS + ['README.md']
                                               if os.path.isfile(os.path.join(root, d))]
 
@@ -372,10 +388,11 @@ def check_frontmatter(v, today):
         if 'sources' in fm and not re.fullmatch(r'\d+', unquote(fm['sources'])):
             out.append(f'{p}: sources "{fm["sources"]}" is not a whole number')
         has_flag = bool(as_list(fm.get('conflicts')))
-        has_section = bool(re.search(r'^#{1,6}\s+Conflicts?\s*$', strip_code_blocks(body), re.M | re.I))
+        has_section = bool(re.search(r'^#{1,6}\s+(?:Held\s+)?Conflicts?\s*(?:$|[:(—–-])', strip_code_blocks(body), re.M | re.I))
         if has_flag and not has_section:
             out.append(f'{p}: has a conflicts flag but no Conflicts section')
-        if has_section and not has_flag:
+        if has_section and not has_flag and not system and p not in v.system_pages:
+            # system pages (open-items, queries) gather conflicts from other pages
             out.append(f'{p}: has a Conflicts section but no conflicts flag')
         if st in ('draft', 'developing') and is_date(fm.get('date_updated', '')):
             age = (today - dt.date.fromisoformat(unquote(fm['date_updated']))).days
@@ -388,7 +405,7 @@ def check_filenames(v):
     out = []
     seen = {}
     for p in v.pages:
-        if p in SYSTEM_FILES:
+        if p in v.system_pages:
             continue
         stem = p[:-3]
         if re.fullmatch(r'[a-z0-9][a-z0-9-]*', stem) or stem == stem.lower():
@@ -459,7 +476,7 @@ def check_links(v):
                 if stem in inbound and os.path.basename(where)[:-3] != stem:
                     inbound[stem].add(where)
     orphans = [f'{s}.md' for s, refs in sorted(inbound.items())
-               if not refs and f'{s}.md' not in SYSTEM_FILES]
+               if not refs and f'{s}.md' not in v.system_pages]
     return broken, case, empty, orphans, inbound
 
 
@@ -507,7 +524,7 @@ def check_index(v):
         if current and dom and key(current) in domain_by_section and key(current) != key(dom):
             out.append(f'index.md:{i}: "{name}" is under "{current}" but its domain is "{dom}"')
     pages = {p[:-3] for p in v.pages}
-    required = {p[:-3] for p in v.pages if p not in SYSTEM_FILES}
+    required = {p[:-3] for p in v.pages if p not in v.system_pages}
     for name, i in sorted(listed.items(), key=lambda x: x[1]):
         if name not in pages:
             out.append(f'index.md:{i}: "{name}" is not a page in {WIKI}/')
@@ -532,14 +549,20 @@ def check_rule_homes(v):
         for i, line in enumerate(text.split('\n'), 1):
             for pat, label in RULE_HOME_PATTERNS:
                 for m in pat.finditer(line):
-                    if label.startswith('file name') and m.group(0) in KNOWN_ROOT_MD:
-                        continue
+                    if label.startswith('file name'):
+                        name_ = m.group(0)
+                        # The real rules file, or a known root file, is fine to name.
+                        # A name that exists nowhere is likely an old rules file name.
+                        if name_ in KNOWN_ROOT_MD or name_ == v.rules_file or os.path.isfile(os.path.join(v.root, name_)):
+                            continue
                     out.append(f'skills/{name}/SKILL.md:{i}: {label} "{m.group(0)}"  {line.strip()[:110]}')
                     break
     return out
 
 
 PATHISH = re.compile(r'`([^`\n]+)`')
+OPTIONAL_PATHS = {'skills/lint/tools/extra_checks.py',   # the brain's own checks, made only when needed
+                  'skills/lint/tools/test_extra_checks.py'}
 
 
 def check_root_docs(v):
@@ -564,7 +587,7 @@ def check_root_docs(v):
             rel = p.strip().rstrip('/')
             if rel.startswith(folder + '/'):
                 rel = rel[len(folder) + 1:]
-            if not rel or rel == folder:
+            if not rel or rel == folder or rel in OPTIONAL_PATHS:
                 continue
             if not os.path.exists(os.path.join(v.root, rel)):
                 out.append(f'{d}: names `{p}`, which does not exist in the brain')
@@ -587,6 +610,10 @@ def map_patterns(text):
     for m in PATHISH.finditer(rows):
         raw = m.group(1).strip()
         if '—' not in raw:
+            # A full page name with no separator (`LLM Wiki Method`) covers that
+            # exact page only, so a bare word like `log` never covers a prefix.
+            if not WILDCARD.search(raw) and re.search(r'\w', raw):
+                pats.append(re.compile('^' + re.escape(raw) + '$'))
             continue
         parts = WILDCARD.split(raw)
         rx = '.+'.join(re.escape(x) for x in parts)
@@ -601,7 +628,7 @@ def check_map(v):
     pats = map_patterns(text)
     out, uncovered = [], {}
     for p in v.pages:
-        if p in SYSTEM_FILES or p == MAP_FILE:
+        if p in v.system_pages or p == MAP_FILE:
             continue
         stem = p[:-3]
         m = PREFIX.match(stem)
@@ -609,7 +636,9 @@ def check_map(v):
             fm, _ = frontmatter(v.text[p])
             tags = as_list((fm or {}).get('tags'))
             if not (tags and tags[0] == 'system'):
-                out.append(f'{p}: a content page with no prefix. Only system pages go without one')
+                if not any(rx.match(stem) for rx in pats):
+                    out.append(f'{p}: a content page with no prefix. Give it one, or list it by '
+                               f'its exact name in a {MAP_FILE} table to keep it unprefixed')
             continue
         if any(rx.match(stem) for rx in pats):
             continue
@@ -625,20 +654,30 @@ def check_map(v):
     return out
 
 
+def hub_threshold(v):
+    """At least HUB_MIN distinct linking pages, rising with the brain's size so a
+    large brain doesn't call half its pages hubs."""
+    return max(HUB_MIN, round(len(v.pages) * 0.05))
+
+
 def check_hubs(v, inbound):
     if MAP_FILE not in v.text:
         return []
     sec = section(v.text[MAP_FILE], r'^Hub') or ''
     listed = {t for _, _, t, _ in links_in(sec) if t}
-    skip = {p[:-3] for p in SYSTEM_FILES} | {MAP_FILE[:-3]}
-    ignore_linkers = {f'{WIKI}/{p}' for p in SYSTEM_FILES | {MAP_FILE}}
-    out = []
-    for stem, refs in sorted(inbound.items(), key=lambda x: -len(x[1])):
+    skip = {p[:-3] for p in v.system_pages} | {MAP_FILE[:-3]}
+    ignore_linkers = {f'{WIKI}/{p}' for p in v.system_pages | {MAP_FILE}}
+    out, candidates = [], []
+    hub_min = hub_threshold(v)
+    for stem, refs in sorted(inbound.items(), key=lambda x: (-len(x[1]), x[0])):
         n = len(refs - ignore_linkers - set(v.root_docs))
         if stem in skip:
             continue
-        if n >= HUB_MIN and stem not in listed:
-            out.append(f'{stem}: {n} distinct pages link here. Not in the map\'s hub list')
+        if n >= hub_min and stem not in listed:
+            candidates.append(f'{stem}: {n} distinct pages link here. Not in the map\'s hub list')
+    out += candidates[:HUB_SHOW]
+    if len(candidates) > HUB_SHOW:
+        out.append(f'...and {len(candidates) - HUB_SHOW} more pages above the threshold of {hub_min}')
     for stem in sorted(listed):
         if stem in inbound:
             n = len(inbound[stem] - ignore_linkers - set(v.root_docs))
@@ -659,14 +698,22 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description='Mechanical checks for an LLM Wiki brain. Reports, never changes.')
     ap.add_argument('--vault', default=DEFAULT_VAULT)
     ap.add_argument('--today', help='YYYY-MM-DD, for the stalled-draft check (default: today)')
+    ap.add_argument('--wiki', help='name of the pages folder, if it is not "wiki" (for a check before a migration)')
+    ap.add_argument('--rules', help='rules file to read, for a brain that has no `llm-wiki: rules` marker yet')
     a = ap.parse_args(argv)
+    global WIKI
+    WIKI = a.wiki.strip('/') if a.wiki else 'wiki'
+
     if a.today and not is_date(a.today):
         print(f'vault_check: --today "{a.today}" is not a YYYY-MM-DD date', file=sys.stderr)
         return 2
 
     root = os.path.abspath(a.vault)
     try:
-        rules = find_rules_files(root) if os.path.isdir(root) else []
+        if a.rules:
+            rules = [a.rules] if os.path.isfile(os.path.join(root, a.rules)) else []
+        else:
+            rules = find_rules_files(root) if os.path.isdir(root) else []
     except OSError as e:
         print(f'vault_check: could not read {root}: {e}', file=sys.stderr)
         return 2
@@ -709,7 +756,7 @@ def main(argv=None):
         ('Rule homes (skills carrying what the rules file or an adapter should own; judge each)', homes),
         ('Root docs naming paths that do not exist', roots),
         ('Vault Map drift (judge each)', vmap),
-        (f'Hubs (pages {HUB_MIN}+ distinct pages link to, and quiet listed hubs; judge each)', hubs),
+        (f'Hubs (pages {hub_threshold(v)}+ distinct pages link to, and quiet listed hubs; judge each)', hubs),
     ]
     total = sum(len(items) for _, items in sections)
     name = v.brain if v.brain and not has_placeholder(v.brain) else '(not set up yet)'

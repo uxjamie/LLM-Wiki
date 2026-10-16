@@ -35,7 +35,7 @@ RULES = ('---\nllm-wiki: rules\nbrain: "Orbit"\ntemplate_version: 0.1.0\n---\n\n
          '├── wiki/                  ← wiki\n│   ├── index.md           ← catalog\n'
          '│   └── gone-page.md       ← a stale entry\n└── outputs/\n```\n\n'
          'Example names: `EXAMPLE.md` and `outputs/<project>/<slug>-WIP.md`. Real path: `wiki/index.md`. '
-         'Stale path: `scripts/missing.sh`. Skills: [[lint]] and [[ingest]].\n\n'
+         'Stale path: `scripts/missing.sh`. Own checks: `skills/lint/tools/extra_checks.py`. Skills: [[lint]] and [[ingest]].\n\n'
          '## Wiki page format\n\n### Domains\n\n| Domain | What |\n|---|---|\n'
          '| `research` | sources |\n| `ideas` | thinking |\n| `people` | people |\n'
          '| `tools` | methods |\n| `components` | a custom domain |\n| `design-decisions` | hyphenated |\n'
@@ -43,7 +43,7 @@ RULES = ('---\nllm-wiki: rules\nbrain: "Orbit"\ntemplate_version: 0.1.0\n---\n\n
          '### Statuses\n\n| Status | Meaning |\n|---|---|\n| `seed` | x |\n| `developing` | x |\n'
          '| `draft` | x |\n| `published` | x |\n| `evergreen` | x |\n\n'
          '### Audiences\n\n| Audience | Meaning |\n|---|---|\n| `internal` | x |\n| `team` | x |\n\n'
-         '## Vault Map\n\nThe map rule.\n')
+         '## Vault Map\n\nThe map rule.\n\n## Index format (`wiki/index.md`)\n\nEntries.\n')
 
 FILES = {
     'ORBIT.md': RULES,
@@ -53,10 +53,10 @@ FILES = {
     'skills/ingest/SKILL.md': ('---\nname: ingest\ndescription: Ingest into the Orbit brain.\n---\n'
                                'Never run git push from here. Read the rules file. Save as `<slug>-WIP.md`.\n'),
     'skills/courier/SKILL.md': ('---\nname: courier\ndescription: Share a page from the brain.\n---\n'
-                                'Read ORBIT.md first. Read CLAUDE.md too. Never write to C:\\Users\\sam.\n'),
+                                'Read ORBIT.md first. Read CLAUDE.md too. Then read BRAIN.md.\nNever write to C:\\Users\\sam.\n'),
     'raw/2026-07-01-source.md': 'A raw source.\n',
     'wiki/log.md': '# Log\n\n## [2026-06-01] ingest | old name [[People — Old Name]]\n',
-    'wiki/open-items.md': page('Open Items', tags='[system]', body='See [[Tools — Good]].'),
+    'wiki/open-items.md': page('Open Items', tags='[system]', body='See [[Tools — Good]].\n\n## Held conflicts\n\nNone yet.'),
     'wiki/queries.md': page('Queries', tags='[system]', body='Views.'),
     'wiki/index.md': (
         '---\ntitle: "Index"\ntags: [system]\nstatus: evergreen\naudience: [internal]\n'
@@ -74,6 +74,7 @@ FILES = {
         '- [[Ideas — Stalled]] — listed twice *(1 source)*\n'
         '- [[Ideas — Hub]] — linked from many pages *(1 source)*\n'
         '## People\n\n'
+        '- [[People — Held]] — a conflict heading with a label *(1 source)*\n'
         '- [[People — Flagged]] — conflicts flag, no section *(1 source)* - [[People — Merged]] — two on one line *(1 source)*\n'
         '## Components\n\n'
         '- [[Components — Button]] — custom domain page *(1 source)*\n'
@@ -82,6 +83,7 @@ FILES = {
         '- [[e2 Labs — Company Overview]] — a lowercase company name *(1 source)*\n'
         '- [[Graph Thing — Agents as Graphs (Doe)]] — a distilled outside source *(1 source)*\n'
         '- [[Unprefixed Content]] — content page with no prefix *(1 source)*\n'
+        '- [[Method Page]] — unprefixed on purpose, listed in the map *(1 source)*\n'
         '## Design Decisions\n\n'
         '- [[Decision — Use Tokens]] — hyphenated domain under a spaced heading *(1 source)*\n'
         '## Tools\n\n'
@@ -103,7 +105,7 @@ FILES = {
         '| People | `People — <name>` |\n| Components | `Components — <name>` |\n'
         '| Research | `<Company> — Company Overview`, `<Topic> — <subtitle> (<Author>)` |\n'
         '| Design decisions | `Decision — <title>` |\n'
-        '| System | No prefix: `index`, `log`, a bare `<slug>` |\n\n'
+        '| System | No prefix: `index`, `log`, a bare `<slug>` |\n| Kept unprefixed | `Method Page` |\n\n'
         '## Hub pages\n\n- [[Tools — Good]]\n- [[Tools — Orphan]]\n\n'
         '## Creation\n\n| Page type | Template |\n|---|---|\n| Idea | `Template — Idea` |\n'
         '| Component | `Template — Component` |\n')),
@@ -115,7 +117,7 @@ FILES = {
     'wiki/Tools — Good.md': page('Tools — Good', body=(
         'Links: [[Ideas — Stalled]], [[Tools — Miscounted]], [[Tools — Bare]], [[lint]], '
         '[[2026-07-01-source]], [[#Body heading]], [[People — Merged]], [[Ideas — Hub]], '
-        '[[ORBIT#Wiki page format]], [[ORBIT#No Such Section]].\n\n## Body heading\n\n'
+        '[[ORBIT#Wiki page format]], [[ORBIT#No Such Section]], [[ORBIT#Index format (`wiki/index.md`)]].\n\n## Body heading\n\n'
         '| a | b |\n|---|---|\n| [[Tools — Miscounted\\|alias in a table]] | x |\n\n'
         '`[[Not A Link In Code]]`')),
     'wiki/Ideas — Stalled.md': page('Ideas — Stalled', tags='[ideas]', status='developing',
@@ -136,7 +138,10 @@ FILES = {
     'wiki/Acme — Tagged.md': page('Acme — Tagged', tags='[acme, process]'),
     'wiki/Components — Button.md': page('Components — Button', tags='[components]'),
     'wiki/Unprefixed Content.md': page('Unprefixed Content', tags='[research]'),
+    'wiki/Method Page.md': page('Method Page', tags='[research]'),
     'wiki/Tools — Orphan.md': page('Tools — Orphan'),
+    'wiki/plays.md': page('Plays', tags='[system]', body='Recurring moves.'),
+    'wiki/People — Held.md': page('People — Held', tags='[people]', extra='conflicts: [y]\n', body='## Conflicts: who owns it\n\nBoth sides.'),
     'wiki/Decision — Use Tokens.md': page('Decision — Use Tokens', tags='[design-decisions]'),
     'wiki/Prose Only — Thing.md': page('Prose Only — Thing', tags='[tools]'),
     'wiki/Logistics — Shipping.md': page('Logistics — Shipping', tags='[tools]'),
@@ -264,7 +269,8 @@ try:
 
     # ── rule homes ─────────────────────────────────────────────────────────
     ok('git command in a skill flagged', has(homes, 'ingest', 'git push'), homes)
-    ok('hardcoded rules file name in a skill flagged', has(homes, 'courier', 'ORBIT.md'), homes)
+    ok('a stale rules file name in a skill is flagged', has(homes, 'courier', '"BRAIN.md"'), homes)
+    ok('the real rules file name in a skill is fine', not has(homes, '"ORBIT.md"'), homes)
     ok('adapter names are fine in skills', not has(homes, '"CLAUDE.md"'), homes)
     ok('-WIP.md filename patterns are not rules files', not has(homes, '"WIP.md"'), homes)
     ok('a skill pointing at "the rules file" is fine', not has(homes, 'skills/lint/'), homes)
@@ -273,6 +279,7 @@ try:
     ok('stale backticked path found', has(roots, 'scripts/missing.sh'), roots)
     ok('stale entry in the directory diagram found', has(roots, 'wiki/gone-page.md'), roots)
     ok('real paths pass', not has(roots, 'wiki/index.md`'), roots)
+    ok('the optional extra checks file may be absent', not has(roots, 'extra_checks.py'), roots)
     ok('examples are not paths', not has(roots, 'EXAMPLE.md') and not has(roots, '<project>'), roots)
 
     # ── vault map ──────────────────────────────────────────────────────────
@@ -303,6 +310,16 @@ try:
     ok('a snapshot copy does not hide a broken link', has(broken, 'Tools — Deleted Page'), broken)
     ok('a single-backslash Windows path in a skill is flagged', has(homes, 'courier', 'local path'), homes)
 
+    ok('an unprefixed page listed by exact name in the map passes', not has(vmap, 'Method Page.md'), vmap)
+    ok('a link to a heading containing code resolves', not has(broken, 'Index format'), broken)
+    ok('a system-tagged page keeps its lowercase name', not has(names, 'plays.md'), names)
+    ok('a system-tagged page needs no index entry', not has(index, '"plays"'), index)
+    ok('a system-tagged page is never an orphan', 'plays.md' not in orphans, orphans)
+    ok('a system-tagged page needs no prefix', not has(vmap, 'plays.md'), vmap)
+    ok('"Conflicts: label" counts as a Conflicts section', not has(fm, 'People — Held.md'), fm)
+    ok('a system page may gather held conflicts without a flag', not has(fm, 'open-items.md'), fm)
+    ok('hub threshold rises with brain size', vc.hub_threshold(v) == max(vc.HUB_MIN, round(len(v.pages) * 0.05)))
+
     v.text = {k: t for k, t in v.text.items() if k != 'Vault Map.md'}
     ok('a missing map is one finding', len(vc.check_map(v)) == 1 and 'is missing' in vc.check_map(v)[0], vc.check_map(v))
 finally:
@@ -331,6 +348,22 @@ try:
     ok('adapters holding placeholders are not pointer findings', not vc.check_pointers(tv), vc.check_pointers(tv))
 finally:
     shutil.rmtree(tpl)
+
+
+# ── a check before a migration: other folder name, no marker yet ──────────
+pre = tempfile.mkdtemp(prefix='llmwiki-pre-')
+try:
+    build(pre, {'OLD.md': '# Old rules\n\n### Domains\n\n| D | W |\n|---|---|\n| `tools` | x |\n',
+                'pages/index.md': '---\ntitle: "Index"\ntags: [system]\nstatus: evergreen\naudience: [internal]\ndate_updated: 2026-10-01\n---\n\n# Index\n\n## Tools\n'})
+    with redirect_stdout(io.StringIO()) as out_, redirect_stderr(io.StringIO()):
+        code = vc.main(['--vault', pre, '--wiki', 'pages', '--rules', 'OLD.md', '--today', TODAY])
+    ok('--wiki and --rules let the checker run before a migration', code == 0, out_.getvalue()[:300])
+    with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+        code2 = vc.main(['--vault', pre, '--today', TODAY])
+    ok('without them, the same folder is not a brain yet', code2 == 2)
+finally:
+    vc.WIKI = 'wiki'
+    shutil.rmtree(pre)
 
 
 # ── it never looks clean when it cannot read ───────────────────────────────

@@ -75,7 +75,7 @@ Everything you write lives in `wiki/` (knowledge) or `outputs/` (deliverables). 
 
 - **Filenames are Title Case with ` — ` as the only separator.** Wikilinks are case-sensitive. A wrong-case file is an invisible page.
 - **Every page needs an inbound link** from a related page or the [[index]], and an index entry on its own line.
-- **A page with no prefix is a system page.** Content pages always take a prefix from the table above. When none fits, add a row here first, or ask {{OWNER_FIRST}}.
+- **A page with no prefix is a system page.** Content pages always take a prefix from the table above. When none fits, add a row here first, or ask {{OWNER_FIRST}}. A page kept unprefixed on purpose goes in a table here by its exact name, in backticks. Any other page that does system work takes `system` as its first tag.
 - **Frontmatter feeds Dataview. Body links feed the graph.** Both, always.
 - **Deliverables go to `outputs/<project>/`** under the output lifecycle (`-WIP`, `-FINAL`, `-SHARED`, `-PUBLISHED`, `-ARCHIVE`), never into `wiki/`.
 - **When unsure where something belongs**, file it and add a `needs-review` tag.

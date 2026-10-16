@@ -24,6 +24,7 @@ Ground rules for the whole move:
 
 - **Survey and plan before you change anything.** Until the owner approves the plan, the only files you write are your own notes in `outputs/_migration/`.
 - **The owner's way wins a tie.** Where the brain already does something its own way and the template differs, keep theirs unless they choose otherwise. Never overwrite one of their rules, decisions, or tools to match the template.
+- **Keep and add, never replace.** When the brain already has a file the template also has (a map, open items, templates, queries, the index), the brain's file is the base. Its contents are never replaced, reordered, or reworded. The plan lists, for each such file, every piece the template's version has that the brain's lacks: a section, a table, a row, a heading the checker reads. Each piece is added only on a yes. Where the two disagree, ask instead of choosing.
 - **Back up before the first change** (step 3). No exceptions.
 - **Sources stay as they are.** Never edit the contents of a file in the sources folder. Renaming the folder itself is fine once approved.
 - **Finished outputs and history stay as they are.** Don't edit files in `outputs/` or past log entries, even when they mention old folder names.
@@ -55,7 +56,7 @@ Look through the brain and write what you find to `outputs/_migration/YYYY-MM-DD
 5. **System pages.** An index (list of every page)? A log of changes? A list of decisions or open work? A map of how the brain is organized? A skill registry? Their names, even when they differ from the template's, and how the index is sectioned.
 6. **Trust habits.** Do pages cite sources, label confidence, record disagreements? Is any material marked confidential?
 7. **Templates, skills, and tools.** Page templates. Written procedures (skills) and where they live: in the folder, installed in an AI app, or both (for example a folder copy packaged into an installed plugin). Whether installed copies mention folder names. Scripts, including helper code inside skill folders. Whether it's a git repository or an Obsidian vault.
-8. **Collisions.** Every file the template would add that the brain already has, under the same name or for the same job: a health-check script, a sync script, templates, the index, the map, open items, queries.
+8. **Collisions.** Every file the template would add that the brain already has, under the same name or for the same job, with what each version has that the other lacks: a health-check script, a sync script, templates, the index, the map, open items, queries.
 9. **Size of a rename.** For each folder that might be renamed, the files that mention its name, grouped: instructions and rules, skills and helper code, settings, pages, templates, and, to be left alone, outputs, log entries, and sources.
 10. **Baseline check.** If the brain has its own health-check script, run it and save the output. Then run the template's checker on the brain as it is now, pointing it at the current pages folder and rules file:
 
@@ -83,9 +84,10 @@ The plan covers:
    - **Folder** (recommended): the procedures live as files in `skills/`. Where the template has a skill for the same job, keep the owner's version unless they choose otherwise.
    - **Folder with an installed copy:** the folder is the source, and a copy is installed in an AI app so it triggers on its own (often a packaged plugin). After the move, the installed copy must be rebuilt and reinstalled, because until then it still mentions the old folder names.
    - **Installed only:** the skills stay installed in an AI app. Future template changes to a skill arrive as files the owner installs by hand.
-8. **Collisions.** For each collision from step 1, propose keeping the brain's file. In particular:
+8. **Collisions.** For each collision from step 1, label it "keep and add" (see the ground rules) and list, file by file, what the template's version has that the brain's lacks, so the owner approves each addition. In particular:
    - **The brain's own health-check script:** keep both. Its checks often come from lessons this brain learned, so none of them should stop running. The template's checker goes in as `skills/lint/tools/vault_check.py`, and the brain's script moves to `skills/lint/tools/extra_checks.py` (its tests, if any, to `test_extra_checks.py`). Lint runs both, and template updates replace `vault_check.py` but never touch `extra_checks.py`. List the checks the two scripts share, and offer to remove those from `extra_checks.py` so findings aren't reported twice. Trim only on a yes, and keep the full original in `outputs/_migration/retired/`.
-   - **A sync script, templates, a map, an index, open items:** keep the brain's and merge in what's missing.
+   - **A map, open items, queries, templates, the index:** keep and add. For the map, call out the pieces the checker reads (the domain table, the prefix tables, the page-type table, the hub list under its own heading), since the checker needs those to work.
+   - **A sync script or other scripts:** keep the brain's. Add the template's only if the brain has none for that job.
    - **A skill registry page:** keep it. The skill table added to `CLAUDE.md` then lists triggers only and points to the registry.
 9. **Extras.** Keep every extra folder and file where it is. Pages that work like system pages (an old log archive, a registry) get `system` as their first tag, so the checker treats them as system pages.
 10. **Instructions file.** If one file mixes behavior and tool details, propose splitting it: behavior moves into the rules file, and tool details stay in `CLAUDE.md`. Keep one file if the owner prefers.
@@ -125,15 +127,15 @@ Report at the end of each checkpoint and wait for a yes before the next.
 3. **System pages.**
    - **Index:** apply the approved sections. Keep every existing entry.
    - **Log:** keep it. Add an entry for this move at the end.
-   - **Open items:** keep the brain's equivalent if it has one. Otherwise create `open-items.md` from the template. Decisions go newest first.
-   - **Vault Map:** if the brain has one, merge into it: align its domain table, give hubs their own heading, and add any prefixes in use that it misses. Otherwise create it from the survey: the domains, the prefixes under each (in backticks, with `<...>` for the variable part), the page-type table (every template must appear), and the hub pages, counted by distinct pages linking in. **Pages the owner keeps without a prefix on purpose** go in a Vault Map table by their exact name, in backticks.
-   - **Queries:** keep the brain's own. Add the template's only if the owner uses Obsidian with Dataview and has none.
+   - **Open items:** if the brain has its own, keep it and add the approved pieces it lacks (for example a Held conflicts section). Otherwise create `open-items.md` from the template. Decisions go newest first.
+   - **Vault Map:** if the brain has one, keep it and add the approved pieces it lacks: a domain table matching the rules file, the prefixes in use that it misses, the page-type table, and a hub list under its own heading (move an existing hub list under that heading rather than rewriting it). Otherwise create it from the survey: the domains, the prefixes under each (in backticks, with `<...>` for the variable part), the page-type table (every template must appear), and the hub pages, counted by distinct pages linking in. **Pages the owner keeps without a prefix on purpose** go in a Vault Map table by their exact name, in backticks.
+   - **Queries:** if the brain has its own, keep it and add only the approved views it lacks. Otherwise add the template's only if the owner uses Obsidian with Dataview.
 
 ### Checkpoint C: pages, templates, skills, and the checker
 
 1. **Page details.** Content pages need `title`, `tags`, `status`, `audience`, `people`, `project`, `date_created`, `date_updated`, and `sources`. System pages need `title`, `tags`, `status`, `audience`, and `date_updated`. Add only missing fields, using the approved mapping, with the domain first in `tags`. Never change a page's body, and don't change `date_updated` for this. If more than 10 pages change, show the owner a sample of three first.
 2. **Names.** Apply only page renames the owner approved, updating every link to each.
-3. **Templates.** Keep the brain's. Add the template's only for domains that have none.
+3. **Templates.** Keep the brain's, adding only the approved fields or sections they lack. Add the template's own templates only for page types that have none.
 4. **Skills.** As approved in step 2:
    - **Folder:** copy only the template skills the brain lacks, and fill in the brain's name.
    - **Folder with an installed copy:** as with folder, then tell the owner the installed copy needs rebuilding and reinstalling now, because it still mentions the old folder names.

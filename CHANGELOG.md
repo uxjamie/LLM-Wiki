@@ -11,6 +11,16 @@ Newest first.
 
 ---
 
+## [0.2.2] 2026-10-16
+
+Makes the migration guide's rule for shared files explicit: keep the brain's file and add what's missing, never replace it.
+
+**Why:** a migration plan that said "keep the brain's map" read like an overwrite to one owner, and keeping a file as it was could also leave out a section the template depends on. Now every shared file keeps the owner's version as the base, and the plan lists each piece to add for approval.
+
+**Apply:** nothing. The change is in `MIGRATE.md`, which is only used during a move onto the template.
+
+---
+
 ## [0.2.1] 2026-10-16
 
 Lets a brain keep its own index sections, and stops the checker flagging skill links in a brain whose skills are installed in an AI app.

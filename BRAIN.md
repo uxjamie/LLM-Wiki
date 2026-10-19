@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.2
+template_version: 0.2.3
 skills: folder
 created: {{CREATED}}
 ---
@@ -27,6 +27,7 @@ Every rule has one home. A rule written in two places drifts, and the copy that 
 | Page types, name prefixes, hub pages | [[Vault Map]] |
 | Step-by-step procedures | `skills/<name>/SKILL.md`. Skills name a rule and point here. They never keep their own copy. |
 | Standing decisions and open work | [[open-items]] |
+| Finished items, shelved threads, retired decisions | [[open-items-archive]] |
 
 When a rule changes, change it in its home and record the date. `lint` checks for rules that have leaked into a second home.
 
@@ -73,7 +74,8 @@ You are the librarian of this knowledge base. You keep a persistent wiki (`wiki/
 ├── wiki/                  ← Your domain. READ and WRITE.
 │   ├── index.md           ← Catalog of every page. Update on every ingest.
 │   ├── log.md             ← Chronological audit trail. Append-only.
-│   ├── open-items.md      ← Standing decisions, open work, held conflicts.
+│   ├── open-items.md      ← Standing decisions and open work. Kept light.
+│   ├── open-items-archive.md ← Finished items, shelved threads, retired decisions. Not read at session start.
 │   ├── Vault Map.md       ← How to move through the brain and where new pages go.
 │   └── queries.md         ← Live Dataview views. Needs Obsidian with Dataview.
 └── outputs/               ← Deliverables. The local source of truth for every output.
@@ -91,7 +93,7 @@ You are the librarian of this knowledge base. You keep a persistent wiki (`wiki/
 At the start of every session:
 
 1. Read the last 10 entries of `wiki/log.md`, then `wiki/index.md`.
-2. Read `wiki/open-items.md`. It carries standing decisions and open work across sessions. Keep it current: check items off in the same turn they finish, add open decisions as they surface, and record settled decisions in its decisions log. A recorded decision governs later work until {{OWNER_FIRST}} changes it.
+2. Read `wiki/open-items.md`. It carries standing decisions and open work across sessions. Keep it current and light: when an item finishes, move it in the same turn, word for word, to `wiki/open-items-archive.md` under *Done*, with the date and one line on what closed it. Checked items never stay in open-items. A thread {{OWNER_FIRST}} shelves moves under *Shelved*, grouped by thread so it can be revived, and open-items keeps a one-line pointer to it. A decision that is superseded, or folded into this file, an adapter or a page, moves under *Retired decisions*, naming its new home. Add open decisions as they surface, and record settled decisions in the decisions log. Session start does not read the archive. Read its matching section when {{OWNER_FIRST}} asks to pick a thread back up. A recorded decision governs later work until {{OWNER_FIRST}} changes it.
 3. If the active adapter adds a step (for example, a remote to reconcile), do it.
 
 ---
@@ -200,7 +202,7 @@ Labels:
 - **Likely.** An informed inference. Give the reasoning.
 - **Hypothesis.** A guess worth testing. Flag it.
 
-**Hold contradictions. Don't smooth them.** When sources disagree, record both sides with their sources under a Conflicts heading on the page, add `conflicts: [short-label]` to its frontmatter, and add a line to `open-items.md` naming who could resolve it. Never pick a side without saying so, or average two accounts into one clean story.
+**Hold contradictions. Don't smooth them.** When sources disagree, record both sides with their sources under a Conflicts heading on the page, add `conflicts: [short-label]` to its frontmatter, and name on the page who could resolve it. Held conflicts live on their pages, not in open-items: lint looks again at every flagged page on each pass, and the queries page lists them when the brain has one. Never pick a side without saying so, or average two accounts into one clean story.
 
 **A change is not a dispute.** Before flagging a conflict, check whether the accounts are separated in time. Two statements that disagree may both have been true when made. Record that as a dated resolution, not a held conflict.
 

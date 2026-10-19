@@ -30,6 +30,7 @@ Entry format: `- [[Page Name]] — one-line summary *(N sources)*`
 ## System
 
 - [[Vault Map]] — how to move through the brain and where new pages go *(0 sources)*
-- [[open-items]] — standing decisions, open work, held conflicts
+- [[open-items]] — standing decisions and open work
+- [[open-items-archive]] — finished items, shelved threads, retired decisions
 - [[queries]] — live Dataview views (needs Obsidian with the Dataview plugin)
 - [[log]] — append-only history of what changed and why

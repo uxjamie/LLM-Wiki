@@ -322,6 +322,17 @@ try:
 
     v.text = {k: t for k, t in v.text.items() if k != 'Vault Map.md'}
     ok('a missing map is one finding', len(vc.check_map(v)) == 1 and 'is missing' in vc.check_map(v)[0], vc.check_map(v))
+
+    # ── open items stay light (0.2.3) ──────────────────────────────────────
+    ok('an open-items with no checked items passes', vc.check_open_items(v) == [], vc.check_open_items(v))
+    v.text['open-items.md'] = page('Open Items', tags='[system]', body='- [ ] live\n- [x] done\n  - [X] nested done')
+    oi = vc.check_open_items(v)
+    ok('checked items left in open-items are flagged', sum('checked item' in i for i in oi) == 2, oi)
+    ok('an unchecked item is not flagged', not has(oi, 'live'), oi)
+    v.text['open-items.md'] = page('Open Items', tags='[system]', body='- [ ] a live item\n' * 2000)
+    ok('an open-items past 25 KB is flagged', has(vc.check_open_items(v), 'propose an archive pass'), vc.check_open_items(v))
+    del v.text['open-items.md']
+    ok('a brain with no open-items is not flagged here', vc.check_open_items(v) == [], vc.check_open_items(v))
 finally:
     shutil.rmtree(root)
 

@@ -11,6 +11,27 @@ Newest first.
 
 ---
 
+## [0.2.3] 2026-10-19
+
+Keeps open-items light. Finished items move to a new archive page the same turn, and held conflicts live only on their pages.
+
+**Why:** open-items is read at the start of every session, so everything left in it costs tokens every time. In one long-running brain, checked items and old decisions had grown it to 121 KB, about 30,000 tokens per session. Moving finished items out as they close keeps that cost flat. Held conflicts already sit on their pages with a flag, and lint looks at every flagged page, so a second list in open-items only adds weight.
+
+**Apply:**
+
+1. In the rules file's session protocol, replace the sentence in the open-items step that starts "Keep it current:" with the template's, which starts "Keep it current and light:".
+2. In the rules file's directory diagram, replace the `open-items.md` line with the template's two lines (open-items, then open-items-archive). In the table of rule homes, add the template's `[[open-items-archive]]` row.
+3. In the rules file's trust layer, in "Hold contradictions", replace "and add a line to `open-items.md` naming who could resolve it." with the template's ending, which starts "and name on the page who could resolve it."
+4. Create `wiki/open-items-archive.md` from the template, with `{{CREATED}}` set to today. If the brain already keeps an archive of its own, keep it and add the three sections it lacks (Done, Shelved, Retired decisions).
+5. In `wiki/open-items.md`, replace the opening sentence that starts "Check items off" with the template's, which starts "When an item finishes". Then list every checked item for the owner. On their yes, move each one, word for word, to the archive under *Done*, newest first.
+6. If open-items has a held-conflicts section, check that each conflict it names carries a `conflicts` flag and a Conflicts section on its page. Add any that are missing. Then, on the owner's yes, move the section into the archive under *Retired decisions*, noting that held conflicts now live on their pages.
+7. Add the template's `[[open-items-archive]]` line to the index's System section and to the Vault Map's entry points.
+8. In the lint skill, replace step 1's ending "Vault Map drift, and hub candidates." and the "Open-items drift" bullet with the template's. If the frontmatter says `skills: installed`, rebuild and reinstall the lint skill afterward.
+9. Replace `skills/lint/tools/vault_check.py` and `skills/lint/tools/test_vault_check.py` with the template's versions, then run `python3 -B skills/lint/tools/test_vault_check.py`. The checker now flags checked items left in open-items and an open-items file past 25 KB.
+10. Set `template_version` to `0.2.3`.
+
+---
+
 ## [0.2.2] 2026-10-16
 
 Makes the migration guide's rule for shared files explicit: keep the brain's file and add what's missing, never replace it.

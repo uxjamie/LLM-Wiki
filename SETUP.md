@@ -63,7 +63,7 @@ Rules to hold while tailoring the list. Explain them if the person proposes some
 
 - **The brain's own subject is never a domain.** In a brain about one company, a domain with that company's name sorts nothing, because every page would carry it. It can be a second tag instead.
 - **`personal` means pages about the owner.** A meeting the owner attended, or a project they lead, takes the domain of its kind.
-- **Keep `system`.** The index, open-items, Vault Map, and queries use it.
+- **Keep `system`.** The index, open-items, its archive, Vault Map, and queries use it.
 - **Fewer is better.** Five to eight domains is plenty. Each one becomes an index section.
 - **Define each one in a single line.** The definition is what future sessions read when a page's domain is unclear.
 

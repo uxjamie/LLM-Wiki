@@ -26,6 +26,7 @@ Entry points:
 
 - [[index]]: every page, by domain. Read first for any question.
 - [[open-items]]: standing decisions and open work. A decision here governs until {{OWNER_FIRST}} changes it.
+- [[open-items-archive]]: finished items, shelved threads, retired decisions. Read a section when picking a thread back up.
 - [[queries]]: live views by status, project, person, and staleness. Needs Obsidian with Dataview.
 - [[log]]: append-only history of what changed and why.
 

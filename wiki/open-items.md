@@ -9,7 +9,7 @@ date_updated: {{CREATED}}
 
 # Open Items
 
-What carries across sessions. Read at the start of every session. Check items off in the same turn they finish. A decision recorded here governs later work until {{OWNER_FIRST}} changes it.
+What carries across sessions. Read at the start of every session. When an item finishes, move it the same turn to [[open-items-archive]] (rules file, *Session protocol*). Checked items never stay here, so this file stays short. Held conflicts are not tracked here either: they live on their pages under a `conflicts` flag, lint looks at them each pass, and the queries page lists them when the brain has one. A decision recorded here governs later work until {{OWNER_FIRST}} changes it.
 
 ## Open work
 
@@ -18,10 +18,6 @@ What carries across sessions. Read at the start of every session. Check items of
 ## Open decisions
 
 Questions waiting on {{OWNER_FIRST}}. Each says what is blocked by it, if anything.
-
-## Held conflicts
-
-Disagreements between sources, recorded on their pages. Each line names the page, the conflict, and who could resolve it.
 
 ## Decisions log
 

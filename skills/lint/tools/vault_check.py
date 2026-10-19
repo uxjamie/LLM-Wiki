@@ -43,6 +43,8 @@ What it checks:
     vault map        prefixes in use and templates the map does not cover
     hubs             pages many distinct pages link to that the map's hub list
                      leaves out, and listed hubs that have gone quiet
+    open items       checked items left in open-items.md (finished items move to
+                     open-items-archive.md the same turn) and the file past 25 KB
 
 Use -B (or PYTHONDONTWRITEBYTECODE=1). Some mounted folders cannot delete files,
 so a stray __pycache__ folder written there could never be cleaned up.
@@ -72,6 +74,7 @@ ADAPTERS = ['CLAUDE.md', 'AGENTS.md']
 TOP_DIRS = ('wiki', 'raw', 'skills', 'scripts', 'templates', 'outputs')
 SEP = ' — '
 STALL_DAYS = 30
+OPEN_ITEMS_LIMIT = 25_000                           # bytes; past this an archive pass is due
 HUB_MIN = 5            # distinct linking pages before a page is a hub candidate (small brains)
 HUB_SHOW = 10          # most hub candidates to list
 HUB_QUIET = 2          # a listed hub with fewer distinct linking pages has gone quiet
@@ -424,6 +427,20 @@ def check_frontmatter(v, today):
     return out, [s for _, s in sorted(stalled, reverse=True)]
 
 
+def check_open_items(v):
+    text = v.text.get('open-items.md')
+    if text is None:
+        return []
+    out = []
+    for i, line in enumerate(text.split('\n'), 1):
+        if re.match(r'\s*[-*]\s+\[[xX]\]', line):
+            out.append(f'open-items.md:{i}: checked item still here, move it to the archive  {line.strip()[:90]}')
+    size = len(text.encode('utf-8'))
+    if size > OPEN_ITEMS_LIMIT:
+        out.append(f'open-items.md: {size // 1000} KB, past {OPEN_ITEMS_LIMIT // 1000} KB, propose an archive pass')
+    return out
+
+
 def check_filenames(v):
     out = []
     seen = {}
@@ -763,6 +780,7 @@ def main(argv=None):
         roots = check_root_docs(v)
         vmap = check_map(v)
         hubs = check_hubs(v, inbound)
+        items = check_open_items(v)
     except (OSError, ValueError) as e:
         print(f'vault_check: could not read the brain: {e}', file=sys.stderr)
         return 2
@@ -782,6 +800,7 @@ def main(argv=None):
         ('Root docs naming paths that do not exist', roots),
         ('Vault Map drift (judge each)', vmap),
         (f'Hubs (pages {hub_threshold(v)}+ distinct pages link to, and quiet listed hubs; judge each)', hubs),
+        ('Open items (checked items to move, or an archive pass due)', items),
     ]
     total = sum(len(items) for _, items in sections)
     name = v.brain if v.brain and not has_placeholder(v.brain) else '(not set up yet)'

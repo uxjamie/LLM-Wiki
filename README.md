@@ -80,11 +80,12 @@ You talk to your AI in plain words. These phrases work, and so do your own versi
 | `scripts/` | An optional helper for people who use git. |
 | `.obsidian/` | Ready-made settings for Obsidian. A hidden folder. Ignore it if you don't use Obsidian. |
 
-The AI keeps four pages in `wiki/` for itself:
+The AI keeps five pages in `wiki/` for itself:
 
 - **index:** a list of every page, one line each.
 - **log:** a running record of every change and why.
 - **open-items:** decisions you've made and work still to do, so nothing gets lost between sessions.
+- **open-items-archive:** where finished items go the moment they're done, so open-items stays short and cheap to read every session.
 - **Vault Map:** a guide to how the brain is organized and where new pages go.
 
 ## How this extends Karpathy's idea

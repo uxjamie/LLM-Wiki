@@ -39,7 +39,7 @@ You need the template's files to copy from. Use whichever works:
 - **From GitHub:** each file is at `https://raw.githubusercontent.com/uxjamie/LLM-Wiki/main/<path>`, for example `.../main/BRAIN.md` or `.../main/skills/lint/tools/vault_check.py`. The full list is on the repository page.
 - **From a downloaded copy:** the owner gives you the folder path. Read from it. Never write into it.
 
-You will need: `BRAIN.md` (the rules template), `CLAUDE.md`, `AGENTS.md`, `CHANGELOG.md`, `skills/` (the three skills and `skills/lint/tools/`), `templates/`, `wiki/Vault Map.md`, `wiki/open-items.md`, and, only if they apply, `wiki/queries.md`, `.obsidian/`, and `scripts/git-sync.sh`.
+You will need: `BRAIN.md` (the rules template), `CLAUDE.md`, `AGENTS.md`, `CHANGELOG.md`, `skills/` (the three skills and `skills/lint/tools/`), `templates/`, `wiki/Vault Map.md`, `wiki/open-items.md`, `wiki/open-items-archive.md`, and, only if they apply, `wiki/queries.md`, `.obsidian/`, and `scripts/git-sync.sh`.
 
 Skip `SETUP.md`. It's for brand-new brains.
 
@@ -127,7 +127,7 @@ Report at the end of each checkpoint and wait for a yes before the next.
 3. **System pages.**
    - **Index:** apply the approved sections. Keep every existing entry.
    - **Log:** keep it. Add an entry for this move at the end.
-   - **Open items:** if the brain has its own, keep it and add the approved pieces it lacks (for example a Held conflicts section). Otherwise create `open-items.md` from the template. Decisions go newest first.
+   - **Open items:** if the brain has its own, keep it and add the approved pieces it lacks (for example the archive note in its opening). Otherwise create `open-items.md` from the template. Decisions go newest first. Create `open-items-archive.md` from the template if the brain has no archive of its own. If the brain has one, keep it and add the three sections it lacks. Checked items move into it only on the owner's yes, word for word. A held-conflicts list in open items moves too, once each conflict it names carries a flag on its page.
    - **Vault Map:** if the brain has one, keep it and add the approved pieces it lacks: a domain table matching the rules file, the prefixes in use that it misses, the page-type table, and a hub list under its own heading (move an existing hub list under that heading rather than rewriting it). Otherwise create it from the survey: the domains, the prefixes under each (in backticks, with `<...>` for the variable part), the page-type table (every template must appear), and the hub pages, counted by distinct pages linking in. **Pages the owner keeps without a prefix on purpose** go in a Vault Map table by their exact name, in backticks.
    - **Queries:** if the brain has its own, keep it and add only the approved views it lacks. Otherwise add the template's only if the owner uses Obsidian with Dataview.
 

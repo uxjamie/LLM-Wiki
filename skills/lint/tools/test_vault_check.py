@@ -264,6 +264,11 @@ try:
     ok('unlisted page', has(index, '"Tools — Orphan" is not listed'), index)
     ok('system files need no entry', not has(index, '"open-items" is not listed'), index)
     ok('system files may be listed', not has(index, '"open-items" is not a page'), index)
+    ok('a short description passes the length check', not has(index, 'characters, past'), index)
+    saved = v.text['index.md']
+    v.text['index.md'] = saved + '- [[Tools — Good]] — ' + 'word ' * 30 + '*(1 source)*\n'
+    ok('a description past 100 characters is flagged', has(vc.check_index(v), 'Tools — Good', 'characters, past 100'), vc.check_index(v))
+    v.text['index.md'] = saved
     ok('entry under the wrong domain section', has(index, 'Ideas — Misfiled', 'under "Tools"', '"ideas"'), index)
     ok('section that is not a declared domain', has(index, 'section "Business"'), index)
 

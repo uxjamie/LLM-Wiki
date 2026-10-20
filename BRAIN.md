@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.5
+template_version: 0.2.6
 skills: folder
 created: {{CREATED}}
 ---
@@ -232,7 +232,7 @@ Organized by domain, one section per domain, unless {{OWNER_FIRST}} prefers othe
 
 `- [[Page Name]] — one-line summary *(N sources)*`
 
-Read it first for any question. Update it on every ingest.
+Read it first for any question. Update it on every ingest. Keep each description to one line of 100 characters or fewer: what the page is, plus the words someone would search it by. The detail belongs on the page. The index is read at the start of every session, so every extra word costs tokens each time.
 
 ## Vault Map
 

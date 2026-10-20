@@ -11,6 +11,22 @@ Newest first.
 
 ---
 
+## [0.2.6] 2026-10-20
+
+Caps index descriptions at 100 characters, and the checker flags longer ones.
+
+**Why:** the index is read at the start of every session. In one long-running brain, descriptions had grown into mini-summaries of their pages (a typical one ran 209 characters, the longest 1,258), and the index reached 73 KB, about 18,000 tokens a session. Rewritten to one line each, it dropped to 36 KB with every link and count kept. A description only has to say enough to pick the right page; the page holds the detail.
+
+**Apply:**
+
+1. In the rules file's "Index format" section, after "Update it on every ingest.", add the template's three sentences that start "Keep each description to one line".
+2. In the ingest skill, at the start of the Hygiene check, add the template's sentence that starts "The new or updated index line". If the frontmatter says `skills: installed`, write the updated skill to `outputs/skill-updates/ingest/SKILL.md` and give the owner its full path.
+3. Replace `skills/lint/tools/vault_check.py` and `skills/lint/tools/test_vault_check.py` with the template's versions, then run `python3 -B skills/lint/tools/test_vault_check.py`.
+4. Run the checker and count the index descriptions past 100 characters. If there are any, propose rewriting them. Save the current index word for word to `outputs/_snapshots/YYYY-MM-DD-index.md` first, show the owner about ten before-and-after samples, and rewrite only on their yes. Keep every link, section and source count.
+5. Set `template_version` to `0.2.6`.
+
+---
+
 ## [0.2.5] 2026-10-20
 
 Adds an archive pass for slimming a long open-items, a script that proves it lost nothing, and three smaller fixes found while updating a real brain.

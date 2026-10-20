@@ -35,7 +35,8 @@ What it checks:
                      prose shorthand and never reported
     orphans          wiki pages nothing links to (log.md does not count)
     index            every page listed once, under a declared domain's section,
-                     with a description and a source count matching the page
+                     with a description of 100 characters or fewer and a
+                     source count matching the page
     stalled          draft / developing pages untouched for 30+ days
     rule homes       skills carrying git commands, local paths, app menu paths,
                      or a hardcoded rules file name
@@ -74,6 +75,7 @@ ADAPTERS = ['CLAUDE.md', 'AGENTS.md']
 TOP_DIRS = ('wiki', 'raw', 'skills', 'scripts', 'templates', 'outputs')
 SEP = ' — '
 STALL_DAYS = 30
+INDEX_DESC_LIMIT = 100                             # characters per index description (rules file, Index format)
 OPEN_ITEMS_LIMIT = 25_000                           # bytes; past this an archive pass is due
 HUB_MIN = 5            # distinct linking pages before a page is a hub candidate (small brains)
 HUB_SHOW = 10          # most hub candidates to list
@@ -557,8 +559,11 @@ def check_index(v):
             out.append(f'index.md:{i}: "{name}" is listed again (first at line {listed[name]})')
         listed.setdefault(name, i)
         rest = line.split(']]', 1)[1] if ']]' in line else ''
-        if not re.search(r'\w', re.sub(r'\*\(\d+ sources?\)\*', '', rest)):
+        desc = re.sub(r'\*\(\d+ sources?\)\*', '', rest).strip().lstrip('—–- ').strip()
+        if not re.search(r'\w', desc):
             out.append(f'index.md:{i}: "{name}" has no description')
+        elif len(desc) > INDEX_DESC_LIMIT:
+            out.append(f'index.md:{i}: "{name}" description is {len(desc)} characters, past {INDEX_DESC_LIMIT}')
         m = re.search(r'\*\((\d+) sources?\)\*', line)
         if m:
             counts[name] = (int(m.group(1)), i)

@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.4
+template_version: 0.2.5
 skills: folder
 created: {{CREATED}}
 ---
@@ -106,7 +106,7 @@ The brain's procedures are plain instructions in `skills/<name>/SKILL.md`: `inge
 
 **Where the skills live is recorded in the frontmatter:** `skills: folder` (the default, as described above) or `skills: installed`. A brain moved onto this template from an older setup may keep its skills installed in an AI app instead. With `skills: installed`, the installed copies are the ones to follow, and changing a skill means giving {{OWNER_FIRST}} an updated file to install (see Template updates). The "When to use each skill" table in `CLAUDE.md` and `AGENTS.md` names each installed skill, so links like [[ingest]] still count as skill links.
 
-A skill may carry helper scripts in `skills/<name>/tools/`, with their tests beside them. A helper reads rules from the file that owns them and never keeps its own copy. The first case is `skills/lint/tools/vault_check.py`, which reads the domain, status, and audience tables from this file on every run. Checks that only make sense for this brain go beside it in `skills/lint/tools/extra_checks.py`, and lint runs both.
+A skill may carry helper scripts in `skills/<name>/tools/`, with their tests beside them. A helper reads rules from the file that owns them and never keeps its own copy. The first case is `skills/lint/tools/vault_check.py`, which reads the domain, status, and audience tables from this file on every run. `skills/lint/tools/archive_check.py` proves an archive pass on open-items lost nothing. Checks that only make sense for this brain go beside it in `skills/lint/tools/extra_checks.py`, and lint runs both.
 
 A reference like `[[ingest]]` or `[[lint]]` in a wiki page is prose shorthand for this brain's skill. It resolves to nothing on purpose. Don't create stub pages to fix it, and don't report it as a broken link.
 
@@ -337,9 +337,9 @@ This brain was built from the LLM Wiki template, version `template_version` in t
 3. Show {{OWNER_FIRST}} what each would change in this brain, adapted to this brain's names and domains, and wait for a yes on each.
 4. Apply what was approved, set `template_version` to the newest applied version, and log it as `update`.
 
-**If the frontmatter says `skills: installed`,** a change to a skill can't be applied to the folder alone. Write each updated skill to `outputs/skill-updates/<name>/SKILL.md`, tell {{OWNER_FIRST}} which installed skills to replace and how, and wait for a yes that they're installed before setting `template_version`.
+**If the frontmatter says `skills: installed`,** a change to a skill can't be applied to the folder alone. Write each updated skill to `outputs/skill-updates/<name>/SKILL.md`, tell {{OWNER_FIRST}} which installed skills to replace and how, giving the full path of each file on this computer, and wait for a yes that they're installed before setting `template_version`.
 
-An update may replace `skills/lint/tools/vault_check.py` and its tests with the template's newer versions. It never changes `skills/lint/tools/extra_checks.py`, which holds this brain's own checks.
+An update may replace or add the template's helpers in `skills/lint/tools/` (`vault_check.py`, `archive_check.py`) and their tests. It never changes `skills/lint/tools/extra_checks.py`, which holds this brain's own checks.
 
 Never apply a template change that would overwrite a decision recorded in [[open-items]]. Raise the clash instead.
 

@@ -11,6 +11,27 @@ Newest first.
 
 ---
 
+## [0.2.5] 2026-10-20
+
+Adds an archive pass for slimming a long open-items, a script that proves it lost nothing, and three smaller fixes found while updating a real brain.
+
+**Why:** 0.2.3 moves finished items out, but a brain whose live items have grown long stays heavy. One went from 92 KB to only 76 KB. The archive pass trims live items to one line each and keeps their full text in the archive, and `archive_check.py` confirms every original line survived. The same run showed three smaller gaps. Ingest updated the pages touched in file surgery but not their index source counts, so 19 counts drifted. Pages imported during a move kept `developing` although the rules call them `evergreen`, so 30 showed as stalled drafts. And an owner couldn't find a staged skill update until the AI gave its full path.
+
+**Apply:**
+
+1. Copy `skills/lint/tools/archive_check.py` and `skills/lint/tools/test_archive_check.py` from the template into the brain, then run `python3 -B skills/lint/tools/test_archive_check.py`.
+2. Replace `skills/lint/tools/vault_check.py` with the template's version (one message changed). Run `python3 -B skills/lint/tools/test_vault_check.py`.
+3. In the lint skill, add the template's `## Archive pass` section before `## Reminders`, and replace step 1's ending with the template's, which adds "(the *Archive pass* below handles it)".
+4. In the ingest skill, step 7, add the sentence from the template that starts "Update the source count".
+5. In the rules file: in the paragraph about helper scripts, add the sentence that names `archive_check.py`. In "Template updates", add "giving the full path of each file on this computer," to the `skills: installed` paragraph, and replace the sentence that starts "An update may replace" with the template's.
+6. In `wiki/open-items.md`, add the template's sentence that starts "Each live item carries one tag".
+7. If the frontmatter says `skills: installed`, write the updated lint and ingest skills to `outputs/skill-updates/` and give the owner the full path of each.
+8. Set `template_version` to `0.2.5`.
+
+The `MIGRATE.md` change (proposing `evergreen` for imported reference pages) applies only to a move onto the template, so nothing to apply here.
+
+---
+
 ## [0.2.4] 2026-10-20
 
 Template updates read the changelog and files from the newest release tag instead of the `main` branch.

@@ -437,7 +437,7 @@ def check_open_items(v):
             out.append(f'open-items.md:{i}: checked item still here, move it to the archive  {line.strip()[:90]}')
     size = len(text.encode('utf-8'))
     if size > OPEN_ITEMS_LIMIT:
-        out.append(f'open-items.md: {size // 1000} KB, past {OPEN_ITEMS_LIMIT // 1000} KB, propose an archive pass')
+        out.append(f'open-items.md: {size // 1000} KB, past {OPEN_ITEMS_LIMIT // 1000} KB, propose an archive pass (lint skill, Archive pass)')
     return out
 
 

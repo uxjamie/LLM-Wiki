@@ -13,7 +13,7 @@ Confirm you are inside the {{BRAIN_NAME}} brain: the folder's root holds the rul
 
 ## Procedure
 
-1. **Run the mechanical check first.** From the brain's root: `python3 -B skills/lint/tools/vault_check.py`. It reports and never changes anything. It reads the domain, status, and audience tables from the rules file, and the prefixes and hubs from the Vault Map, so it follows this brain's own rules. It covers: setup leftovers, the adapters pointing at the right rules file, skill descriptions carrying the brain's name, frontmatter, filenames and separators, broken, empty, and wrong-case links, orphans, the index, stalled drafts, rules in the wrong home, root docs naming paths that don't exist, Vault Map drift, hub candidates, and an open-items file that has started to grow back. If `skills/lint/tools/extra_checks.py` exists, run it next: `python3 -B skills/lint/tools/extra_checks.py`. It holds checks specific to this brain, often carried over from a checker the brain had before, and its findings go in the same report. Judge each finding before it goes in the report. Some are intended. If Python is not available, do the same checks by reading. If you change the script, run `python3 -B skills/lint/tools/test_vault_check.py` and add a test for any new false flag.
+1. **Run the mechanical check first.** From the brain's root: `python3 -B skills/lint/tools/vault_check.py`. It reports and never changes anything. It reads the domain, status, and audience tables from the rules file, and the prefixes and hubs from the Vault Map, so it follows this brain's own rules. It covers: setup leftovers, the adapters pointing at the right rules file, skill descriptions carrying the brain's name, frontmatter, filenames and separators, broken, empty, and wrong-case links, orphans, the index, stalled drafts, rules in the wrong home, root docs naming paths that don't exist, Vault Map drift, hub candidates, and an open-items file that has started to grow back (the *Archive pass* below handles it). If `skills/lint/tools/extra_checks.py` exists, run it next: `python3 -B skills/lint/tools/extra_checks.py`. It holds checks specific to this brain, often carried over from a checker the brain had before, and its findings go in the same report. Judge each finding before it goes in the report. Some are intended. If Python is not available, do the same checks by reading. If you change the script, run `python3 -B skills/lint/tools/test_vault_check.py` and add a test for any new false flag.
 2. **Read `index.md`, `log.md`, and `open-items.md`**, then scan the pages for what a script can't judge:
    - **Contradictions** between pages filed at different times. Keep both sides with sources. Look again at every page already carrying a `conflicts` flag.
    - **Stale claims** a newer source has overtaken, and time-sensitive pages past their shelf life.
@@ -28,6 +28,22 @@ Confirm you are inside the {{BRAIN_NAME}} brain: the folder's root holds the rul
 4. **Write the report** to `outputs/lint-YYYY-MM-DD.md`, grouped by type, most urgent first, connection candidates last.
 5. **Propose fixes and wait for approval** before changing pages. Renames always wait: list each file and every page whose links will change. Trivial repairs (a missing wikilink, an index line) can go ahead if the owner has allowed it.
 6. **Log it:** `## [YYYY-MM-DD] lint | summary`. If the brain uses git, end with `Not committed, awaiting the owner's trigger.`
+
+## Archive pass
+
+Run only on the owner's yes, when step 1 reports open-items past 25 KB or the owner asks to slim it. Moving finished items the same turn (rules file, *Session protocol*) keeps the file light day to day. This pass handles live items that have grown long.
+
+1. **Plan first.** Show the owner the method below with two worked examples, one item and one ruling, and wait for a yes.
+2. **Snapshot.** Copy `wiki/open-items.md` to `outputs/_snapshots/YYYY-MM-DD-open-items.md`.
+3. **Keep the history.** Copy the whole body of `wiki/open-items.md` (everything below its frontmatter), word for word, into `wiki/open-items-archive.md` under `## Open items, full text before the trim (YYYY-MM-DD)`. The whole body, not only the items, so the opening text and section notes survive too.
+4. **Trim.** Rewrite each live item as one line: its status and the next action, keeping its key links, with one tag:
+   - **Decide:** needs the owner's call.
+   - **Track:** waiting on someone else or a date.
+   - **Clear:** can close now with the owner's ruling, proposed in the item.
+   - **Do:** a task the owner can just do.
+5. **Rulings.** Turn each decision still in force into a one-line standing ruling, with its date, under `## Standing rulings`. A ruling already written into the rules file or a page is named in one line, not restated. Move the full decisions log to the archive, and leave an empty `## Decisions log` for new decisions.
+6. **Prove it.** Run `python3 -B skills/lint/tools/archive_check.py outputs/_snapshots/YYYY-MM-DD-open-items.md`. It must report nothing lost. Then run the checker and report the new size.
+7. **Log it** as `update`.
 
 ## Reminders
 

@@ -133,7 +133,7 @@ Report at the end of each checkpoint and wait for a yes before the next.
 
 ### Checkpoint C: pages, templates, skills, and the checker
 
-1. **Page details.** Content pages need `title`, `tags`, `status`, `audience`, `people`, `project`, `date_created`, `date_updated`, and `sources`. System pages need `title`, `tags`, `status`, `audience`, and `date_updated`. Add only missing fields, using the approved mapping, with the domain first in `tags`. Never change a page's body, and don't change `date_updated` for this. If more than 10 pages change, show the owner a sample of three first.
+1. **Page details.** Content pages need `title`, `tags`, `status`, `audience`, `people`, `project`, `date_created`, `date_updated`, and `sources`. System pages need `title`, `tags`, `status`, `audience`, and `date_updated`. Add only missing fields, using the approved mapping, with the domain first in `tags`. Never change a page's body, and don't change `date_updated` for this. If more than 10 pages change, show the owner a sample of three first. **Status:** a person page, a source summary or a stable reference page is `evergreen` (rules file, *Status*). List the imported ones still marked `draft` or `developing` and propose `evergreen` for each, on the owner's yes. Leave pages still being worked on as they are.
 2. **Names.** Apply only page renames the owner approved, updating every link to each.
 3. **Templates.** Keep the brain's, adding only the approved fields or sections they lack. Add the template's own templates only for page types that have none.
 4. **Skills.** As approved in step 2:

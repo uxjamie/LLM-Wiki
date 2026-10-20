@@ -9,7 +9,7 @@ date_updated: {{CREATED}}
 
 # Open Items
 
-What carries across sessions. Read at the start of every session. When an item finishes, move it the same turn to [[open-items-archive]] (rules file, *Session protocol*). Checked items never stay here, so this file stays short. Held conflicts are not tracked here either: they live on their pages under a `conflicts` flag, lint looks at them each pass, and the queries page lists them when the brain has one. A decision recorded here governs later work until {{OWNER_FIRST}} changes it.
+What carries across sessions. Read at the start of every session. When an item finishes, move it the same turn to [[open-items-archive]] (rules file, *Session protocol*). Checked items never stay here, so this file stays short. Held conflicts are not tracked here either: they live on their pages under a `conflicts` flag, lint looks at them each pass, and the queries page lists them when the brain has one. Each live item carries one tag: Decide, Track, Clear or Do (lint skill, *Archive pass*). A decision recorded here governs later work until {{OWNER_FIRST}} changes it.
 
 ## Open work
 

@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.3
+template_version: 0.2.4
 skills: folder
 created: {{CREATED}}
 ---
@@ -331,7 +331,8 @@ Specific tools and budgets live in the adapter.
 
 This brain was built from the LLM Wiki template, version `template_version` in this file's frontmatter. The template keeps improving. When {{OWNER_FIRST}} says "check for template updates":
 
-1. Fetch `CHANGELOG.md` from the template repository named in the frontmatter (the raw file on the `main` branch).
+1. Find the template's newest release: the latest release of the repository named in the frontmatter (`https://api.github.com/repos/<owner>/<repo>/releases/latest`), or its highest tag. Tags carry a `v`: `v0.2.4`, not `0.2.4`. Fetch `CHANGELOG.md` at that tag (`https://raw.githubusercontent.com/<owner>/<repo>/<tag>/CHANGELOG.md`), and read every other template file an update needs from the same tag, never from `main`. A fetch tool or cache can return an old copy of a branch, but a tag's files never change.
+   **If the newest version listed is older than `template_version`,** the copy is stale. The template was not rolled back. Fetch again at the release tag, or ask {{OWNER_FIRST}} for the release zip. Never lower `template_version`, and never log a rollback.
 2. List every version newer than `template_version`, each with its "Why" and "Apply" notes.
 3. Show {{OWNER_FIRST}} what each would change in this brain, adapted to this brain's names and domains, and wait for a yes on each.
 4. Apply what was approved, set `template_version` to the newest applied version, and log it as `update`.

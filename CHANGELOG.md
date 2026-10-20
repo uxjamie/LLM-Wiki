@@ -11,6 +11,19 @@ Newest first.
 
 ---
 
+## [0.2.4] 2026-10-20
+
+Template updates read the changelog and files from the newest release tag instead of the `main` branch.
+
+**Why:** a brain checking for updates fetched an old cached copy of `main` that stopped two versions back, and concluded the template had been rolled back. A tag's files never change, so fetching by tag can't return a stale copy. A version older than the brain's own is now treated as a stale copy, never as a rollback.
+
+**Apply:**
+
+1. In the rules file's "Template updates" section, replace step 1 with the template's step 1, including the paragraph under it that starts "If the newest version listed is older".
+2. Set `template_version` to `0.2.4`.
+
+---
+
 ## [0.2.3] 2026-10-19
 
 Keeps open-items light. Finished items move to a new archive page the same turn, and held conflicts live only on their pages.

@@ -11,6 +11,22 @@ Newest first.
 
 ---
 
+## [0.2.7] 2026-10-21
+
+Offers a scheduled health check during setup and migration, and defines what a scheduled lint run may do.
+
+**Why:** lint is where the brain finds broken links, stale facts, and connections the owner would miss, but it only ran when someone remembered to say "lint". Setup now offers to schedule it. A scheduled run has nobody there to approve fixes, so it reports and changes nothing. Its instructions name only the brain's folder, so a later folder rename can't quietly break it. Migration now looks for existing schedules, because a rename inside the brain breaks a task that names old folders, and the task fails without warning.
+
+**Apply:**
+
+1. In the lint skill, add the template's `## Scheduled runs` section before `## Archive pass`, and the template's ending for the last reminder ("See *Scheduled runs* above."). If the frontmatter says `skills: installed`, write the updated skill to `outputs/skill-updates/lint/SKILL.md` and give the owner its full path.
+2. In `CLAUDE.md` and `AGENTS.md`, add "or a scheduled health check runs" to the lint row of the skill table, and add the template's `## Scheduled health check` section before `## Helper scripts`. Adapt it to this brain's paths.
+3. Ask the owner whether anything already runs on this brain on a schedule. If something does, check its instructions for folder names inside the brain and offer to replace them with the instructions in the lint skill's *Scheduled runs* section. If nothing does, offer one: "Want me to check the brain on my own every two weeks? I write a short report and change nothing until you say yes." Options: every two weeks, weekly, monthly, or no. Create it only on a yes, and record the choice in the decisions log either way.
+4. If the brain's README has an "Everyday use" table, offer to add to the lint row that it runs on its own, when a schedule exists.
+5. Set `template_version` to `0.2.7`.
+
+---
+
 ## [0.2.6] 2026-10-20
 
 Caps index descriptions at 100 characters, and the checker flags longer ones.

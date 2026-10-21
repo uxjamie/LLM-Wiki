@@ -29,6 +29,22 @@ Confirm you are inside the {{BRAIN_NAME}} brain: the folder's root holds the rul
 5. **Propose fixes and wait for approval** before changing pages. Renames always wait: list each file and every page whose links will change. Trivial repairs (a missing wikilink, an index line) can go ahead if the owner has allowed it.
 6. **Log it:** `## [YYYY-MM-DD] lint | summary`. If the brain uses git, end with `Not committed, awaiting the owner's trigger.`
 
+## Scheduled runs
+
+The owner may have set lint to run on its own (setup or migration offers it, and the decisions log in `open-items.md` records it). On a scheduled run nobody is there to approve anything, so:
+
+1. Do steps 1 to 4 as usual: the mechanical check, the read-through, connection mining, and the report.
+2. Change no pages. Step 5's trivial repairs wait too, even if the owner has allowed them in a live session.
+3. Add one line to `open-items.md`: `Lint report ready: outputs/lint-YYYY-MM-DD.md, <n> findings, <n> connection leads. Review and approve fixes.` If the previous scheduled report's line is still there unreviewed, say so in the new line instead of adding a second one.
+4. Log it as in step 6, adding `(scheduled)` after `lint`.
+5. Never commit, never run an archive pass, never rename.
+
+The task's own instructions name only the brain's folder and this skill, never `wiki/`, `raw/`, or other folders inside it. Folder names live here, so a later rename can't break the task.
+
+The task's instructions, adapted to the tool that runs them:
+
+> Open the {{BRAIN_NAME}} brain in <full path to this folder>. Read the rules file (the root file `CLAUDE.md` or `AGENTS.md` names), follow its session protocol, then run the lint skill as a scheduled run. Report only. Change no pages.
+
 ## Archive pass
 
 Run only on the owner's yes, when step 1 reports open-items past 25 KB or the owner asks to slim it. Moving finished items the same turn (rules file, *Session protocol*) keeps the file light day to day. This pass handles live items that have grown long.
@@ -49,4 +65,4 @@ Run only on the owner's yes, when step 1 reports open-items past 25 KB or the ow
 
 - Report. Don't silently rewrite.
 - Lint looks back at what is broken. Connection mining looks forward at what is possible. Both belong in every pass.
-- Good as a recurring scheduled task.
+- Good as a recurring scheduled task. See *Scheduled runs* above.

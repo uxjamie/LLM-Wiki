@@ -58,7 +58,8 @@ Look through the brain and write what you find to `outputs/_migration/YYYY-MM-DD
 7. **Templates, skills, and tools.** Page templates. Written procedures (skills) and where they live: in the folder, installed in an AI app, or both (for example a folder copy packaged into an installed plugin). Whether installed copies mention folder names. Scripts, including helper code inside skill folders. Whether it's a git repository or an Obsidian vault.
 8. **Collisions.** Every file the template would add that the brain already has, under the same name or for the same job, with what each version has that the other lacks: a health-check script, a sync script, templates, the index, the map, open items, queries.
 9. **Size of a rename.** For each folder that might be renamed, the files that mention its name, grouped: instructions and rules, skills and helper code, settings, pages, templates, and, to be left alone, outputs, log entries, and sources.
-10. **Baseline check.** If the brain has its own health-check script, run it and save the output. Then run the template's checker on the brain as it is now, pointing it at the current pages folder and rules file:
+10. **Schedules.** Anything that runs on the brain on a schedule, such as a weekly health check. Scheduled tasks live in the AI app, not in this folder, so reading files won't find them. Use the tool's task list if it has one, or ask: "Does anything already run on this brain on a schedule?" For each: how often it runs, the app that runs it, and every folder name or path its instructions mention.
+11. **Baseline check.** If the brain has its own health-check script, run it and save the output. Then run the template's checker on the brain as it is now, pointing it at the current pages folder and rules file:
 
     ```
     python3 -B <template>/skills/lint/tools/vault_check.py --vault . --wiki <pages folder> --rules <rules file>
@@ -92,6 +93,7 @@ The plan covers:
 9. **Extras.** Keep every extra folder and file where it is. Pages that work like system pages (an old log archive, a registry) get `system` as their first tag, so the checker treats them as system pages.
 10. **Instructions file.** If one file mixes behavior and tool details, propose splitting it: behavior moves into the rules file, and tool details stay in `CLAUDE.md`. Keep one file if the owner prefers.
 11. **Obsidian and git.** Keep as they are.
+12. **Health check schedule.** If the brain already has one, keep it (default), and list any folder names in its instructions that a rename would break. If it has none, offer one, as setup does: "Want me to check the brain on my own every two weeks? I write a short report and change nothing until you say yes." Options: every two weeks (default), weekly, monthly, or no.
 
 Wait for a yes. Revise and show it again if the owner changes anything substantial.
 
@@ -114,7 +116,7 @@ Report at the end of each checkpoint and wait for a yes before the next.
 ### Checkpoint A: folders
 
 1. Rename the sources folder to `raw/` and the pages folder to `wiki/` (if approved).
-2. Update references to the old names in: the instructions and rules files, the README, skills, **helper code inside skill folders** (a hardcoded path there breaks silently), other scripts, templates, Obsidian settings, dashboard queries, and pages.
+2. Update references to the old names in: the instructions and rules files, the README, skills, **helper code inside skill folders** (a hardcoded path there breaks silently), other scripts, templates, Obsidian settings, dashboard queries, pages, and **the instructions of any scheduled task** from step 1 (also silent: the task keeps running and fails or reports on the wrong folder). If you can edit the task, replace its instructions with the ones in the lint skill's *Scheduled runs* section, which name no inner folders. If you can't, give the owner the exact new instructions to paste in, and wait for their yes that it's done.
 3. Leave alone: `outputs/`, past log entries, and files in the sources folder.
 4. **Read each match before replacing it.** Some mentions aren't this brain's paths: a note about another brain, a quotation, an example. Replace only real references to this brain's folders.
 5. Wikilinks like `[[Page]]` don't contain folder names and need no change. Fix any path-style links (`[[old-folder/Page]]`).
@@ -163,11 +165,13 @@ Write the second and third groups to `outputs/_migration/YYYY-MM-DD-findings.md`
 
 1. Log the move: `## [YYYY-MM-DD] update | Moved onto the LLM Wiki template v<version>`, with what changed and where the backup is.
 2. Record each decision from step 2 in the decisions log, newest first, with today's date.
-3. Tell the owner, in plain words:
+3. **Health check schedule.** If the owner said yes to a new one, create it now, after the check in step 5, so its first run works on the finished brain. Follow the adapter's *Scheduled health check* section and record it in the decisions log. That first run picks up the findings file from step 5.
+4. Tell the owner, in plain words:
    - what changed, and that their pages, sources, and decisions are all still there
    - where the backup is, and that it can be removed once they're happy
    - what the checker found, in the three groups, and that their own checks still run beside it
    - that "check for template updates" now works
+   - whether a health check is scheduled, how often, and that each run leaves a report for them to approve
    - any installed skills to rebuild or replace, and where the files are
 
 The backup, survey, plan, baseline, and findings stay until the owner decides to remove them.

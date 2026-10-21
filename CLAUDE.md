@@ -20,10 +20,20 @@ The brain's skills are step-by-step instructions kept in this folder, in `skills
 | Skill | Use it when | Read |
 |---|---|---|
 | ingest | A new source arrives: a file lands in `raw/`, {{OWNER_FIRST}} pastes text or a link, shares a thought worth keeping, or says "ingest this", "file this", "save this", "add this to the brain". Use it even when the word "ingest" is never said. | `skills/ingest/SKILL.md` |
-| lint | {{OWNER_FIRST}} says "lint", "health check", "what's stale", "what's missing", "what should I look at", or about 20 sources have been ingested since the last lint. | `skills/lint/SKILL.md` |
+| lint | {{OWNER_FIRST}} says "lint", "health check", "what's stale", "what's missing", "what should I look at", about 20 sources have been ingested since the last lint, or a scheduled health check runs. | `skills/lint/SKILL.md` |
 | courier | {{OWNER_FIRST}} says "share this", "make this shareable", "sanitize this", or wants to give a page to someone who doesn't have the brain. | `skills/courier/SKILL.md` |
 
 If a copy of one of these skills is also installed in the app, follow the copy in this folder. When a skill is added to `skills/`, add a row here and in `AGENTS.md`.
+
+## Scheduled health check
+
+When {{OWNER_FIRST}} wants lint to run on its own (setup or migration asks), create a scheduled task with the scheduling tool this Claude session offers, using the task instructions in the lint skill's *Scheduled runs* section. Look for the tool before saying it isn't available; some load only on request. Then:
+
+- **Say what the task needs to run.** In the Claude desktop app, a task that works on this folder needs the computer awake, the app open, and this folder connected. Tell {{OWNER_FIRST}} plainly, and say which approval setting the task got.
+- **No scheduling tool?** Say so, and suggest a repeating calendar reminder to say "lint" instead. Don't use session-only timers: they end when the session does, without warning.
+- **Record it** in the decisions log in `wiki/open-items.md`: how often it runs, the app that runs it, and the task's name.
+
+To change or stop the schedule, edit or remove the task in the app, then update that decision.
 
 ## Helper scripts
 

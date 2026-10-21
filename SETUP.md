@@ -46,6 +46,7 @@ Ask these in one message (or one form, if your tool has a question widget). Give
 6. **Sharing.** "Will anything in here belong to your employer or a client? If so, I'll treat everything as confidential and keep it from leaking into anything you share." If yes, the Confidentiality section stays and pages can carry `confidential: employer`. Then: "Who might you share things from this brain with: no one, your team, or the public?" This sets the sharing levels. Default: `internal` (just you), `team`, `public`.
 7. **Git.** "Do you want to use git? It's a tool that saves a history of every change so you can go back to an earlier version. If you haven't used it, choose no. The brain keeps its own written log of changes either way." Options: no (default), git in this folder only, or git with an online copy such as a private GitHub repository. With git, the AI only saves a version when the person asks.
 8. **Obsidian.** "Will you read the brain in Obsidian? It's a free app that shows your pages with clickable links and a map of how they connect. The brain works fine without it." Default: yes.
+9. **Regular health check.** "Want me to check the brain on my own every so often? I look for broken links, outdated facts, and gaps, and point out pages that should be connected. I write you a short report and change nothing until you say yes. Your computer needs to be on with this app open when it runs." Options: every two weeks (default), weekly, monthly, or no (you'll say "lint" when you want one). If the tool has no way to schedule a task, skip this question and suggest a calendar reminder at hand-over.
 
 ### Default domains
 
@@ -79,7 +80,7 @@ Derive these from the answers, then show them in one short message:
 - **Purpose:** their two to four lines, tightened.
 - **Domains:** the final table with definitions.
 - **Prefixes:** one page-type row per domain for the Vault Map (see step 4.6), so the person sees how pages will be named.
-- **Audiences, confidentiality, git, Obsidian:** their choices.
+- **Audiences, confidentiality, git, Obsidian, health check:** their choices. The health check is scheduled last, in step 7, once the brain checks clean.
 - **Files that change:** every file in step 4.
 
 Wait for a yes. Apply any changes they ask for, and show the plan again if the changes were large.
@@ -173,14 +174,16 @@ Then open three files and read them as a newcomer would: the rules file, `wiki/V
 
 Ask the person before touching this file. On their yes, move it to `outputs/_setup/SETUP-ARCHIVE-YYYY-MM-DD.md`. It is history now: the log and open-items hold what was decided.
 
-## Step 7. Hand over
+## Step 7. Schedule the health check and hand over
 
-Tell the person, briefly and in plain words (no file jargon):
+**Schedule it.** If the person chose a regular health check, create it now, following the adapter's *Scheduled health check* section (`CLAUDE.md` for Claude, `AGENTS.md` for other tools). Record it in the decisions log and the log. If it can't be created, say why and suggest a calendar reminder instead.
+
+Then tell the person, briefly and in plain words (no file jargon):
 
 - what was built and where the rules live
 - how to add the first source: drop a file into `raw/` or paste something into the chat and say "ingest this"
 - how to ask questions: just ask
-- how to keep it healthy: say "lint" every couple of weeks
+- how to keep it healthy: if a health check is scheduled, how often it runs, that each one leaves a report and a note in open items for them to review, and that it fixes nothing without their yes. Otherwise, say "lint" every couple of weeks
 - if they chose Obsidian, the Obsidian steps from the README
 - that "check for template updates" brings in later improvements to the template
 
@@ -205,7 +208,7 @@ Talk to your AI in plain words. These phrases work, and so do your own versions 
 |---|---|
 | "ingest this", "save this", "file this" | The AI saves the original in `raw/`, then writes or updates the pages it touches. |
 | Any question | The AI answers from your pages and says where each answer came from. |
-| "lint" or "health check" | The AI checks for broken links, outdated facts, and gaps, and suggests fixes before making them. |
+| "lint" or "health check" | The AI checks for broken links, outdated facts, and gaps, points out pages worth connecting, and suggests fixes before making them. <If scheduled: "It also runs on its own every <interval> and leaves a report for you to review."> |
 | "share this" | The AI makes a clean copy of a page for someone else, with private details removed, in `outputs/shared/`. |
 | "check for template updates" | The AI looks for improvements to the template this brain came from and offers to add them. |
 

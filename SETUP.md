@@ -210,7 +210,7 @@ Talk to your AI in plain words. These phrases work, and so do your own versions 
 | Any question | The AI answers from your pages and says where each answer came from. |
 | "lint" or "health check" | The AI checks for broken links, outdated facts, and gaps, points out pages worth connecting, and suggests fixes before making them. <If scheduled: "It also runs on its own every <interval> and leaves a report for you to review."> |
 | "share this" | The AI makes a clean copy of a page for someone else, with private details removed, in `outputs/shared/`. |
-| "check for template updates" | The AI looks for improvements to the template this brain came from and offers to add them. |
+| "check for template updates" | The AI looks for improvements to the template this brain came from and offers to add them. It backs up first and asks before touching anything you've changed. |
 
 ## Where things are
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Archive check: proves an archive pass on open-items lost nothing.
 
+This file belongs to the LLM Wiki template. Template updates replace it whole,
+so a brain's own checks go in extra_checks.py, never in here.
+
     python3 -B skills/lint/tools/archive_check.py <snapshot>                 # from the brain's root
     python3 -B skills/lint/tools/archive_check.py <snapshot> --vault <path>  # anywhere else
 

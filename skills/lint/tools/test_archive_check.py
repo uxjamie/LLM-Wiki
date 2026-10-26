@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Tests for archive_check.py. Run: python3 -B test_archive_check.py"""
+"""Tests for archive_check.py. Run: python3 -B test_archive_check.py
+
+Belongs to the LLM Wiki template: updates replace it.
+"""
 import io
 import os
 import shutil

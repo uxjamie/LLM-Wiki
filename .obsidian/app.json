@@ -5,5 +5,7 @@
   "alwaysUpdateLinks": true,
   "showInlineTitle": true,
   "showUnsupportedFiles": true,
-  "userIgnoreFilters": []
+  "userIgnoreFilters": [
+    "outputs/_snapshots/"
+  ]
 }

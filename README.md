@@ -62,7 +62,7 @@ You talk to your AI in plain words. These phrases work, and so do your own versi
 | Any question | The AI looks through your pages and answers, pointing to where each answer came from. A good answer gets saved as a page. |
 | "lint" or "health check" | The AI checks the brain for broken links, outdated facts, and gaps, points out pages that should be connected, then suggests fixes and waits for your yes. Every couple of weeks is plenty. Setup can schedule it to run on its own; you still approve every fix. |
 | "share this" | The AI makes a clean copy of a page for someone who doesn't have your brain, with private details removed. |
-| "check for template updates" | The AI looks here for improvements to this template and offers to add them to your brain. |
+| "check for template updates" | The AI looks here for improvements to this template and offers to add them to your brain. It backs up what it will touch first, asks about anything you've changed yourself, and remembers what you turn down. |
 
 ## What's in the folder
 

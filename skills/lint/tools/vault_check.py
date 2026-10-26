@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Vault check: the mechanical half of an LLM Wiki brain's health check.
 
+This file belongs to the LLM Wiki template. Template updates replace it whole,
+so a brain's own checks go in extra_checks.py beside it, never in here.
+
     python3 -B skills/lint/tools/vault_check.py                 # from the brain's root
     python3 -B skills/lint/tools/vault_check.py --vault <path>  # anywhere else
     python3 -B skills/lint/tools/vault_check.py --today 2026-10-16

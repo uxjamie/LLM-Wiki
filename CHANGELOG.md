@@ -7,7 +7,28 @@ Each entry has two parts:
 - **Why:** what problem the change fixes, in a sentence or two.
 - **Apply:** steps an AI can follow inside an existing brain. Steps name files by their role (the rules file, the Vault Map), because every brain names its rules file differently and may have renamed its domains.
 
+An entry may also carry a **Needs** line naming earlier versions its steps build on. An entry without one stands on its own. "The template's" text in a step means the text at that entry's own release tag.
+
 Newest first.
+
+---
+
+## [0.2.8] 2026-10-26
+
+Makes template updates safe for a brain its owner has changed: a snapshot first, a three-way comparison for every step, a record of what was turned down, and a report at the end.
+
+**Why:** updates found text by its wording and applied each step as written. If the owner had reworded that text, the AI had to guess, and could overwrite their change or add a duplicate. Turning down a version lost it for good once a later one was applied. An interrupted update could add the same section twice on a rerun. Nothing was backed up first. And the lint skill invited edits to `vault_check.py`, a file every update replaces. Now each step compares the brain's text with the template as it was at the brain's own version. Untouched text updates as written, and changed text is shown to the owner with a combined version to approve.
+
+**Needs:** 0.2.0 (`skills/lint/tools/extra_checks.py` as the home for the brain's own checks).
+
+**Apply:** this version still runs the old way. Every later one runs the new way.
+
+1. Copy every file this version touches to `outputs/_snapshots/YYYY-MM-DD-before-template-update/`, keeping their folder paths: the rules file, the lint skill, the four files in `skills/lint/tools/` that the template ships, and `.obsidian/app.json` if it exists.
+2. Replace the rules file's `## Template updates` section with the template's. If the owner has changed that section, show both, keep their additions in the new one, and wait for a yes. In the frontmatter, add `template_skipped: []` on the line after `template_version`.
+3. In the lint skill, step 1, replace the sentence that starts "If you change the script" with the template's, which starts "Don't edit `vault_check.py` for this brain". If the frontmatter says `skills: installed`, write the updated skill to `outputs/skill-updates/lint/SKILL.md` and give the owner its full path.
+4. Compare the brain's `vault_check.py` and `archive_check.py` with the template's copies at the brain's current version tag. If either differs, show the owner the differences and offer to move them into `extra_checks.py` first. Then replace `vault_check.py`, `test_vault_check.py`, `archive_check.py` and `test_archive_check.py` with the template's, and run both test scripts.
+5. In the rules file's directory diagram, add the template's `_snapshots/` line under `outputs/`. If the brain uses Obsidian, add `outputs/_snapshots/` to its excluded files (in `.obsidian/app.json`, `userIgnoreFilters`), unless it's already there.
+6. Set `template_version` to `0.2.8`, and write the update report the new section describes.
 
 ---
 
@@ -16,6 +37,8 @@ Newest first.
 Offers a scheduled health check during setup and migration, and defines what a scheduled lint run may do.
 
 **Why:** lint is where the brain finds broken links, stale facts, and connections the owner would miss, but it only ran when someone remembered to say "lint". Setup now offers to schedule it. A scheduled run has nobody there to approve fixes, so it reports and changes nothing. Its instructions name only the brain's folder, so a later folder rename can't quietly break it. Migration now looks for existing schedules, because a rename inside the brain breaks a task that names old folders, and the task fails without warning.
+
+**Needs:** 0.2.5 (the lint skill's `## Archive pass` section).
 
 **Apply:**
 
@@ -48,6 +71,8 @@ Caps index descriptions at 100 characters, and the checker flags longer ones.
 Adds an archive pass for slimming a long open-items, a script that proves it lost nothing, and three smaller fixes found while updating a real brain.
 
 **Why:** 0.2.3 moves finished items out, but a brain whose live items have grown long stays heavy. One went from 92 KB to only 76 KB. The archive pass trims live items to one line each and keeps their full text in the archive, and `archive_check.py` confirms every original line survived. The same run showed three smaller gaps. Ingest updated the pages touched in file surgery but not their index source counts, so 19 counts drifted. Pages imported during a move kept `developing` although the rules call them `evergreen`, so 30 showed as stalled drafts. And an owner couldn't find a staged skill update until the AI gave its full path.
+
+**Needs:** 0.2.0 (the rules file's paragraph that starts "An update may replace").
 
 **Apply:**
 
@@ -113,6 +138,8 @@ Makes the migration guide's rule for shared files explicit: keep the brain's fil
 Lets a brain keep its own index sections, and stops the checker flagging skill links in a brain whose skills are installed in an AI app.
 
 **Why:** moving a real brain showed two false alarms that would come back on every lint. An index grouped by the owner's own sections, such as work in progress, reference, was always flagged as not following the domains. And with `skills: installed`, links like `[[ingest]]` were reported as broken, because there's no skill file in the folder.
+
+**Needs:** 0.2.0 (`skills: installed` in the rules file's frontmatter).
 
 **Apply:**
 

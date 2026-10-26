@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Tests for vault_check.py. Run: python3 -B test_vault_check.py
 
+Belongs to the LLM Wiki template: updates replace it. Test a brain's own checks
+in test_extra_checks.py.
+
 Builds a small stand-in brain in a temp folder with one planted defect per check,
 plus the cases that must stay clean because the brain does them on purpose:
 skill links, same-page heading links, old names in the append-only log, a

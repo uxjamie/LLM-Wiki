@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.8
+template_version: 0.2.9
 template_skipped: []
 skills: folder
 created: {{CREATED}}
@@ -333,8 +333,14 @@ Specific tools and budgets live in the adapter.
 
 This brain was built from the LLM Wiki template. In this file's frontmatter, `template_version` is the newest version handled, and `template_skipped` lists the versions or steps {{OWNER_FIRST}} chose not to apply. The template keeps improving. When {{OWNER_FIRST}} says "check for template updates":
 
-1. **Find the newest release:** the latest release of the repository named in the frontmatter (`https://api.github.com/repos/<owner>/<repo>/releases/latest`), or its highest tag. Tags carry a `v`: `v0.2.4`, not `0.2.4`. Fetch `CHANGELOG.md` at that tag (`https://raw.githubusercontent.com/<owner>/<repo>/<tag>/CHANGELOG.md`), and read template files only at release tags (step 4 says which), never from `main`. A fetch tool or cache can return an old copy of a branch, but a tag's files never change. Fetch only from the repository named in `template:`.
-   **If the newest version listed is older than `template_version`,** the copy is stale. The template was not rolled back. Fetch again at the release tag, or ask {{OWNER_FIRST}} for the release zip. Never lower `template_version`, and never log a rollback.
+1. **Find the newest release.** Web caches can return an old copy of GitHub's release and tag lists, which would hide a newer version. So check every source below that works, and trust the highest version whose `CHANGELOG.md` loads at its own tag (`https://raw.githubusercontent.com/<owner>/<repo>/v<version>/CHANGELOG.md`, with the version as its own entry in that file):
+   - **git:** if you can run commands, `git ls-remote --tags <repository URL>`. It reads the tags from GitHub itself, so a cache can't make it stale.
+   - **The latest release:** `https://api.github.com/repos/<owner>/<repo>/releases/latest`, or the highest tag in the repository's tag list.
+   - **The next numbers:** starting from the highest version found so far, try the changelog at the next patch number (`v0.2.9` after `v0.2.8`). If that's missing, try the next minor (`v0.3.0`), then the next major (`v1.0.0`). Keep going until all three are missing.
+   - **{{OWNER_FIRST}}:** if they name a version, fetch it at its tag.
+
+   Tags carry a `v`: `v0.2.4`, not `0.2.4`. Read template files only at release tags (step 4 says which), never from `main`, because a tag's files never change. Fetch only from the repository named in `template:`. Note which source found the newest version, for the report in step 7.
+   **If a source lists nothing newer than `template_version`,** it may be a stale copy. The template is never rolled back. Never lower `template_version`, and never log a rollback.
 2. **List what's new:** every version newer than `template_version`, plus each entry in `template_skipped`, each with its "Why", "Apply" and "Needs" notes. A version can't be applied while a version its "Needs" line names is missing or skipped. Offer the needed one first, or skip both.
 3. **Snapshot first.** Before the first change, copy every file the updates will touch to `outputs/_snapshots/YYYY-MM-DD-before-template-update/`, keeping their folder paths. If the brain uses git and everything is committed, that commit is the snapshot instead. Snapshots stay out of Obsidian's search and graph through its excluded files (`outputs/_snapshots/`).
 4. **Compare three ways.** For each step that changes part of a file the brain already has, read three copies of that part:
@@ -351,7 +357,7 @@ This brain was built from the LLM Wiki template. In this file's frontmatter, `te
    Read each version's files at that version's own tag, never the newest one, so a jump across several versions applies them in order. A brain moved onto the template from an older setup kept its own wording, so many parts differ from the Original. That's expected: treat them as changed here.
 5. **Show the exact text, then apply.** For each version, show what each step would add or replace, word for word and not a summary, with its label from step 4. Wait for a yes. A yes can cover some steps and not others. Apply versions in order, oldest first.
 6. **Template-owned helpers.** `vault_check.py`, `archive_check.py` and their tests in `skills/lint/tools/` belong to the template, and updates replace them whole. Before replacing one, compare the brain's copy with the Original. If they differ, list the differences and offer to move them into `extra_checks.py` (tests into `test_extra_checks.py`) first. Then replace the file and run its tests. An update never changes `extra_checks.py` or `test_extra_checks.py`, which hold this brain's own checks.
-7. **Record what happened.** Set `template_version` to the newest version handled, applied or knowingly skipped. Never lower it. Add each declined version or step to `template_skipped` (`"0.2.6"` or `"0.2.6 step 4"`), and remove an entry once it's applied. Write `outputs/template-update-YYYY-MM-DD.md`, listing every step with its outcome (applied, already done, combined, kept theirs, took the template's, or skipped) and where the snapshot is. Log it as `update`.
+7. **Record what happened.** Set `template_version` to the newest version handled, applied or knowingly skipped. Never lower it. Add each declined version or step to `template_skipped` (`"0.2.6"` or `"0.2.6 step 4"`), and remove an entry once it's applied. Write `outputs/template-update-YYYY-MM-DD.md`, listing every step with its outcome (applied, already done, combined, kept theirs, took the template's, or skipped), where the snapshot is, and which source in step 1 found the newest version. Log it as `update`.
 
 **If the frontmatter says `skills: installed`,** a change to a skill can't be applied to the folder alone. Write each updated skill to `outputs/skill-updates/<name>/SKILL.md`, tell {{OWNER_FIRST}} which installed skills to replace and how, giving the full path of each file on this computer, and wait for a yes that they're installed before setting `template_version`.
 

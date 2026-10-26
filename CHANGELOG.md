@@ -13,6 +13,24 @@ Newest first.
 
 ---
 
+## [0.2.9] 2026-10-26
+
+Finds the newest template version even when a web cache serves old release and tag lists.
+
+**Why:** checking for updates in a real brain, GitHub's latest-release link and its tag list both came back as old copies showing v0.2.5, while v0.2.8 was out. The AI found v0.2.8 only by fetching its tag directly. A less careful run would have reported no updates. Step 1 now checks several sources, including git and the next version numbers, and trusts the highest version whose changelog actually loads at its tag.
+
+**Needs:** 0.2.8 (the seven-step "Template updates" section).
+
+**Apply:**
+
+1. In the rules file's "Template updates" section, replace step 1, including the paragraph under it, with the template's step 1, which starts "**Find the newest release.**".
+2. In step 7 of the same section, add the template's ending to the report sentence: ", and which source in step 1 found the newest version."
+3. Set `template_version` to `0.2.9`.
+
+If this check reported no updates while 0.2.9 was out, that was the stale cache this version fixes. Saying "check for template updates, the newest is v0.2.9" gets around it.
+
+---
+
 ## [0.2.8] 2026-10-26
 
 Makes template updates safe for a brain its owner has changed: a snapshot first, a three-way comparison for every step, a record of what was turned down, and a report at the end.

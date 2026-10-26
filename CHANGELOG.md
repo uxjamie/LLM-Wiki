@@ -13,6 +13,24 @@ Newest first.
 
 ---
 
+## [0.2.11] 2026-10-26
+
+Gives each update run its own snapshot folder, makes clear that an untouched step still needs the owner's yes, and keeps a second same-day run in the same report.
+
+**Why:** a brain applied two updates on the same day. The snapshot folder was named only by date, so the second run's name was already taken. The AI kept the first copy and improvised a new name. The same run applied a version without asking because every step was labelled untouched. The owner had approved it in advance that time, but "untouched" says how to apply a step, not that the owner's yes can be skipped. A small wording fix comes along: the source "a version the owner names" no longer asks each brain to choose a pronoun.
+
+**Needs:** 0.2.10 (the "Fetch fresh" paragraph and the four sources in step 1 of "Template updates").
+
+**Apply:**
+
+1. In the rules file's "Template updates" section, step 1, replace the owner's source bullet (it starts with the owner's name and ends "fetch it at its tag.") with the template's, which starts "**A version".
+2. In step 3, replace the snapshot folder name and the sentence it sits in with the template's, which names the folder `YYYY-MM-DD-template-update-from-v<template_version>/`, and add the two sentences after it, which start "One snapshot covers the whole run" and "If that folder already exists".
+3. In step 5, after "A yes can cover some steps and not others.", add the template's three sentences, which start "A label decides how a step is applied", "Only", and "Steps labelled already done".
+4. In step 7, after the report's file name, add "(if today's report already exists, add this run as a new section)".
+5. Set `template_version` to `0.2.11`.
+
+---
+
 ## [0.2.10] 2026-10-26
 
 A "not found" for a newer version is checked again fresh before the AI reports no updates.

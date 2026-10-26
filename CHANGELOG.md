@@ -13,6 +13,24 @@ Newest first.
 
 ---
 
+## [0.2.10] 2026-10-26
+
+A "not found" for a newer version is checked again fresh before the AI reports no updates.
+
+**Why:** a brain checked for updates minutes after 0.2.9 came out and said none existed. Earlier that day, while applying 0.2.8, it had looked for 0.2.9 before it was released. Its fetch tool kept that "not found" and gave it back to the new check. A page that loads can be trusted, because a tag's files never change, but a "not found" can be an old answer. Now the AI checks again with git, with caching turned off, or with a throwaway query on the address before it believes one.
+
+**Needs:** 0.2.9 (the four sources in step 1 of "Template updates").
+
+**Apply:**
+
+1. In the rules file's "Template updates" section, step 1, in the "next numbers" source, replace "Keep going until all three are missing." with the template's, which ends "on a fresh fetch (below).".
+2. In the same step, replace the paragraph that starts "**If a source lists nothing newer than `template_version`,**" with the template's two paragraphs, which start "**Fetch fresh before trusting a "not found".**" and "The template is never rolled back."
+3. Set `template_version` to `0.2.10`.
+
+To reach this version from a brain whose cache still says "not found", ask for it by name and add a throwaway query to the address: "Check for template updates. v0.2.10 is out. Fetch its changelog with `?check=<date and time>` on the end."
+
+---
+
 ## [0.2.9] 2026-10-26
 
 Finds the newest template version even when a web cache serves old release and tag lists.

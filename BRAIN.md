@@ -3,7 +3,7 @@ llm-wiki: rules
 brain: "{{BRAIN_NAME}}"
 owner: "{{OWNER}}"
 template: https://github.com/uxjamie/LLM-Wiki
-template_version: 0.2.9
+template_version: 0.2.10
 template_skipped: []
 skills: folder
 created: {{CREATED}}
@@ -336,11 +336,12 @@ This brain was built from the LLM Wiki template. In this file's frontmatter, `te
 1. **Find the newest release.** Web caches can return an old copy of GitHub's release and tag lists, which would hide a newer version. So check every source below that works, and trust the highest version whose `CHANGELOG.md` loads at its own tag (`https://raw.githubusercontent.com/<owner>/<repo>/v<version>/CHANGELOG.md`, with the version as its own entry in that file):
    - **git:** if you can run commands, `git ls-remote --tags <repository URL>`. It reads the tags from GitHub itself, so a cache can't make it stale.
    - **The latest release:** `https://api.github.com/repos/<owner>/<repo>/releases/latest`, or the highest tag in the repository's tag list.
-   - **The next numbers:** starting from the highest version found so far, try the changelog at the next patch number (`v0.2.9` after `v0.2.8`). If that's missing, try the next minor (`v0.3.0`), then the next major (`v1.0.0`). Keep going until all three are missing.
+   - **The next numbers:** starting from the highest version found so far, try the changelog at the next patch number (`v0.2.9` after `v0.2.8`). If that's missing, try the next minor (`v0.3.0`), then the next major (`v1.0.0`). Keep going until all three are missing on a fresh fetch (below).
    - **{{OWNER_FIRST}}:** if they name a version, fetch it at its tag.
 
    Tags carry a `v`: `v0.2.4`, not `0.2.4`. Read template files only at release tags (step 4 says which), never from `main`, because a tag's files never change. Fetch only from the repository named in `template:`. Note which source found the newest version, for the report in step 7.
-   **If a source lists nothing newer than `template_version`,** it may be a stale copy. The template is never rolled back. Never lower `template_version`, and never log a rollback.
+   **Fetch fresh before trusting a "not found".** A fetch tool can keep copies of pages it looked up before, including a "not found" from before a version existed, and an old copy of the release list. A version whose changelog loads is real, because a tag's files never change. A "not found", or a list with nothing newer than `template_version`, is not proof. Before trusting one, check again in a way a cache can't answer: git, the fetch tool with its caching turned off (some tools call this a maximum age of 0), or the same address with a throwaway query on the end, such as `?check=<date and time>`, new each time. Report "no updates" only after that.
+   The template is never rolled back. Never lower `template_version`, and never log a rollback.
 2. **List what's new:** every version newer than `template_version`, plus each entry in `template_skipped`, each with its "Why", "Apply" and "Needs" notes. A version can't be applied while a version its "Needs" line names is missing or skipped. Offer the needed one first, or skip both.
 3. **Snapshot first.** Before the first change, copy every file the updates will touch to `outputs/_snapshots/YYYY-MM-DD-before-template-update/`, keeping their folder paths. If the brain uses git and everything is committed, that commit is the snapshot instead. Snapshots stay out of Obsidian's search and graph through its excluded files (`outputs/_snapshots/`).
 4. **Compare three ways.** For each step that changes part of a file the brain already has, read three copies of that part:

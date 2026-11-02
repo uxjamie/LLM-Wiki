@@ -13,6 +13,25 @@ Newest first.
 
 ---
 
+## [0.2.12] 2026-11-02
+
+Makes sure a scheduled health check can open the brain: the task gets the brain's folder, the owner is told which access button to press, and the task runs once as a test while the owner is there.
+
+**Why:** an owner's first scheduled check ran in the cloud and couldn't reach the brain. Scheduled tasks run in the cloud unless they're given a folder on the computer, and the brain's path written into the task's instructions didn't grant access. The app does ask for access the first time a task needs a folder, but nobody was there to answer, and the owner hadn't been told that **Allow for all scheduled runs** is the choice that keeps later runs working. A test run during setup puts that question in front of the owner while they're present.
+
+**Needs:** 0.2.7 (the "Scheduled health check" sections in `CLAUDE.md` and `AGENTS.md`).
+
+**Apply:**
+
+1. In `CLAUDE.md`, in "Scheduled health check", replace the bullet that starts "**Say what the task needs to run.**" with the template's three bullets, which start "**Give the task this folder.**", "**Warn about the access question, then test.**" and "**Say what the task needs to run.**".
+2. In `AGENTS.md`, in "Scheduled health check", replace the sentence that starts "Tell", then the owner's name, then "what the task needs to run", with the template's sentences, from "Make sure the task can open this folder" to "until that test passes."
+3. If this brain already has a scheduled health check, ask the owner whether its runs have been producing lint reports in `outputs/`. If not, or they aren't sure, walk through the folder setting and the test run from step 1 now.
+4. Set `template_version` to `0.2.12`.
+
+The `SETUP.md` and `MIGRATE.md` changes (running the test while the person is still there) apply only to setting up or moving a brain, so nothing to apply here.
+
+---
+
 ## [0.2.11] 2026-10-26
 
 Gives each update run its own snapshot folder, makes clear that an untouched step still needs the owner's yes, and keeps a second same-day run in the same report.

@@ -25,7 +25,7 @@ If a copy of one of these skills is also installed in the app, follow the copy i
 
 ## Scheduled health check
 
-When {{OWNER_FIRST}} wants lint to run on its own (setup or migration asks), use this tool's scheduler if it has one, with the task instructions in the lint skill's *Scheduled runs* section. Tell {{OWNER_FIRST}} what the task needs to run (the computer on, the app open, this folder available). If the tool has no scheduler, say so and suggest a repeating calendar reminder to say "lint" instead. Record the schedule in the decisions log in `wiki/open-items.md`: how often, the app that runs it, and the task's name.
+When {{OWNER_FIRST}} wants lint to run on its own (setup or migration asks), use this tool's scheduler if it has one, with the task instructions in the lint skill's *Scheduled runs* section. Make sure the task can open this folder: a path written in its instructions may not grant access, so give the task the folder in the scheduler's own settings if it has them. Tell {{OWNER_FIRST}} what the task needs to run (the computer on, the app open, this folder available). Then run the task once, now, while {{OWNER_FIRST}} is there to answer any access question. If one appears, they should allow it for every scheduled run, not just this one. Confirm it wrote `outputs/lint-YYYY-MM-DD.md`. Setting up the schedule isn't finished until that test passes. If the tool has no scheduler, say so and suggest a repeating calendar reminder to say "lint" instead. Record the schedule in the decisions log in `wiki/open-items.md`: how often, the app that runs it, and the task's name.
 
 ## Helper scripts
 

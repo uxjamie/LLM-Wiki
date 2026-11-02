@@ -29,7 +29,9 @@ If a copy of one of these skills is also installed in the app, follow the copy i
 
 When {{OWNER_FIRST}} wants lint to run on its own (setup or migration asks), create a scheduled task with the scheduling tool this Claude session offers, using the task instructions in the lint skill's *Scheduled runs* section. Look for the tool before saying it isn't available; some load only on request. Then:
 
-- **Say what the task needs to run.** In the Claude desktop app, a task that works on this folder needs the computer awake, the app open, and this folder connected. Tell {{OWNER_FIRST}} plainly, and say which approval setting the task got.
+- **Give the task this folder.** Scheduled tasks run in the cloud unless they're given a folder on the computer, and a path written in the task's instructions doesn't grant access. If the scheduling tool takes a folder, set it to this brain's folder. If it doesn't, tell {{OWNER_FIRST}} to open the task under **Scheduled** in the sidebar and set the folder Claude should work in.
+- **Warn about the access question, then test.** Before the first run, tell {{OWNER_FIRST}}: "The first time this check runs, Claude will ask to work in this folder. Choose **Allow for all scheduled runs**, not just **Allow**. Plain Allow covers that one run, so the next check, which runs while you're away, couldn't open the brain." Then run the task once, now, while {{OWNER_FIRST}} is there to answer. Confirm it wrote `outputs/lint-YYYY-MM-DD.md`. Setting up the schedule isn't finished until that test passes. If it fails, say what went wrong and how to fix it.
+- **Say what the task needs to run.** A task that works on a folder on this computer runs on this computer, so it needs the computer awake and the Claude app open at the scheduled time. Tell {{OWNER_FIRST}} plainly, and say which approval setting the task got.
 - **No scheduling tool?** Say so, and suggest a repeating calendar reminder to say "lint" instead. Don't use session-only timers: they end when the session does, without warning.
 - **Record it** in the decisions log in `wiki/open-items.md`: how often it runs, the app that runs it, and the task's name.
 

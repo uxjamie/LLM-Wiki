@@ -176,7 +176,7 @@ Ask the person before touching this file. On their yes, move it to `outputs/_set
 
 ## Step 7. Schedule the health check and hand over
 
-**Schedule it.** If the person chose a regular health check, create it now, following the adapter's *Scheduled health check* section (`CLAUDE.md` for Claude, `AGENTS.md` for other tools). Record it in the decisions log and the log. If it can't be created, say why and suggest a calendar reminder instead.
+**Schedule it.** If the person chose a regular health check, create it now, following the adapter's *Scheduled health check* section (`CLAUDE.md` for Claude, `AGENTS.md` for other tools), including its test run while the person is still here. Record it in the decisions log and the log. If it can't be created, say why and suggest a calendar reminder instead.
 
 Then tell the person, briefly and in plain words (no file jargon):
 

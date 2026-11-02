@@ -165,7 +165,7 @@ Write the second and third groups to `outputs/_migration/YYYY-MM-DD-findings.md`
 
 1. Log the move: `## [YYYY-MM-DD] update | Moved onto the LLM Wiki template v<version>`, with what changed and where the backup is.
 2. Record each decision from step 2 in the decisions log, newest first, with today's date.
-3. **Health check schedule.** If the owner said yes to a new one, create it now, after the check in step 5, so its first run works on the finished brain. Follow the adapter's *Scheduled health check* section and record it in the decisions log. That first run picks up the findings file from step 5.
+3. **Health check schedule.** If the owner said yes to a new one, create it now, after the check in step 5, so its first run works on the finished brain. Follow the adapter's *Scheduled health check* section, including its test run while the owner is still here, and record it in the decisions log. That test run picks up the findings file from step 5.
 4. Tell the owner, in plain words:
    - what changed, and that their pages, sources, and decisions are all still there
    - where the backup is, and that it can be removed once they're happy

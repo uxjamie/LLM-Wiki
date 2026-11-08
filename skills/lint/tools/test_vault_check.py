@@ -46,6 +46,8 @@ RULES = ('---\nllm-wiki: rules\nbrain: "Orbit"\ntemplate_version: 0.1.0\n---\n\n
          '### Statuses\n\n| Status | Meaning |\n|---|---|\n| `seed` | x |\n| `developing` | x |\n'
          '| `draft` | x |\n| `published` | x |\n| `evergreen` | x |\n\n'
          '### Audiences\n\n| Audience | Meaning |\n|---|---|\n| `internal` | x |\n| `team` | x |\n\n'
+         '## Writing\n\nRULEQ (a term the rules file defines).\n\n'
+         '### Known acronyms\n\n| Acronym | Meaning |\n|---|---|\n| `KNWQ` | one this brain knows |\n\n'
          '## Vault Map\n\nThe map rule.\n\n## Index format (`wiki/index.md`)\n\nEntries.\n')
 
 FILES = {
@@ -157,6 +159,15 @@ FILES = {
     'outputs/_snapshots/2026-10-01/Tools — Deleted Page.md': page('Tools — Deleted Page'),
     'wiki/Tools — Bad Date.md': page('Tools — Bad Date', updated='20261001'),
     'wiki/Tools — Thin.md': '---\ntitle: "Thin"\ntags: [tools]\n---\n\nNo dates. [[Tools — Orphan]]\n',
+    # acronyms (0.2.13): ZQX is the one real finding. The rest are defined, known, common,
+    # emphasis, on too few pages, or only in code or a URL.
+    'wiki/Tools — Acro One.md': page('Tools — Acro One', body='Uses ZQX, DEFP, BOLDQ, DASHQ, TABQ, TITLEQ, RULEQ and KNWQ. The API said NOT now. `CODEQ` and https://example.com/URLQ. TWOQ too.'),
+    'wiki/Tools — Acro Two.md': page('Tools — Acro Two', body='Uses ZQX, DEFP, BOLDQ, DASHQ, TABQ, TITLEQ, RULEQ and KNWQ. The API said NOT now. `CODEQ` and https://example.com/URLQ. TWOQ too.'),
+    'wiki/Tools — Acro Three.md': page('Tools — Acro Three', body='Uses ZQX, DEFP, BOLDQ, DASHQ, TABQ, TITLEQ, RULEQ and KNWQ. The API said NOT now. `CODEQ` and https://example.com/URLQ.'),
+    'wiki/Tools — Acro Glossary.md': page('Tools — Acro Glossary', body=(
+        'Defined Pages (DEFP). **BOLDQ** is bold. DASHQ: a colon definition.\n\n'
+        '| Term | Meaning |\n|---|---|\n| TABQ | a table row |\n')),
+    'wiki/Tools — TITLEQ Primer.md': page('Tools — TITLEQ Primer'),
 }
 
 fails = []
@@ -330,6 +341,35 @@ try:
 
     v.text = {k: t for k, t in v.text.items() if k != 'Vault Map.md'}
     ok('a missing map is one finding', len(vc.check_map(v)) == 1 and 'is missing' in vc.check_map(v)[0], vc.check_map(v))
+
+    # ── acronyms and unanswered questions (0.2.13) ────────────────────────
+    acr = vc.check_acronyms(v)
+    ok('an acronym on 3 pages defined nowhere is flagged', has(acr, 'ZQX', 'on 3 pages'), acr)
+    ok('defined in parentheses passes', not has(acr, 'DEFP'), acr)
+    ok('defined in bold passes', not has(acr, 'BOLDQ'), acr)
+    ok('defined with a colon passes', not has(acr, 'DASHQ'), acr)
+    ok('defined in a table row passes', not has(acr, 'TABQ'), acr)
+    ok('named in a page title passes', not has(acr, 'TITLEQ'), acr)
+    ok('defined in the rules file passes', not has(acr, 'RULEQ'), acr)
+    ok('listed under Known acronyms passes', not has(acr, 'KNWQ'), acr)
+    ok('a common acronym is never flagged', not has(acr, 'API'), acr)
+    ok('an emphasis word is never flagged', not has(acr, 'NOT'), acr)
+    ok('an acronym on only 2 pages is not flagged', not has(acr, 'TWOQ'), acr)
+    ok('an acronym only in code or a URL is ignored', not has(acr, 'CODEQ') and not has(acr, 'URLQ'), acr)
+    ok('ZQX is the only acronym finding', len(acr) == 1, acr)
+    saved_log = v.text['log.md']
+    v.text['log.md'] = saved_log + '\nZQX: defined only in the log.\n'
+    ok('a definition in log.md does not count', has(vc.check_acronyms(v), 'ZQX'), vc.check_acronyms(v))
+    ok('no unanswered questions logged is clean', vc.check_unanswered(v) == [], vc.check_unanswered(v))
+    v.text['log.md'] = (saved_log + '\n## [2026-09-01] query | Unanswered: an old gap\n\nNothing on it.\n'
+                        '\n## [2026-09-10] lint | health check\n\nRan.\n'
+                        '\n## [2026-10-02] query | Unanswered: who owns the billing launch?\n\nNo page covers it.\n'
+                        '\n## [2026-10-03] query | Answered fine\n')
+    un = vc.check_unanswered(v)
+    ok('an unanswered question after the last lint is listed', has(un, '2026-10-02', 'billing launch'), un)
+    ok('one from before the last lint is not', not has(un, 'an old gap'), un)
+    ok('an ordinary query entry is not listed', len(un) == 1, un)
+    v.text['log.md'] = saved_log
 
     # ── open items stay light (0.2.3) ──────────────────────────────────────
     ok('an open-items with no checked items passes', vc.check_open_items(v) == [], vc.check_open_items(v))

@@ -22,6 +22,8 @@ The brain's rules are NOT copied in here. Each run reads them from the brain:
     Audiences        the table under its "Audiences" heading
     prefixes, hubs   the backticked patterns and the "Hub pages" section in
                      wiki/Vault Map.md
+    known acronyms   the backticked first cells of the table under the rules
+                     file's "Known acronyms" heading, if it has one
 
 What it checks:
 
@@ -49,6 +51,13 @@ What it checks:
                      leaves out, and listed hubs that have gone quiet
     open items       checked items left in open-items.md (finished items move to
                      open-items-archive.md the same turn) and the file past 25 KB
+    acronyms         all-caps terms (3 to 8 characters) on 3+ content pages that
+                     no page defines: in bold, in parentheses, followed by a dash,
+                     colon or opening parenthesis, as a table row's first cell, or
+                     in a page title or heading. Common acronyms and the rules
+                     file's Known acronyms are skipped
+    unanswered       questions logged as `query | Unanswered: ...` in log.md
+                     since the most recent lint entry
 
 Use -B (or PYTHONDONTWRITEBYTECODE=1). Some mounted folders cannot delete files,
 so a stray __pycache__ folder written there could never be cleaned up.
@@ -83,11 +92,29 @@ OPEN_ITEMS_LIMIT = 25_000                           # bytes; past this an archiv
 HUB_MIN = 5            # distinct linking pages before a page is a hub candidate (small brains)
 HUB_SHOW = 10          # most hub candidates to list
 HUB_QUIET = 2          # a listed hub with fewer distinct linking pages has gone quiet
+ACRONYM_MIN_PAGES = 3  # content pages an undefined acronym must appear on to be reported
 
 # Fallbacks, used only when the rules file has lost a table (reported as a finding).
 DEFAULT_DOMAINS = {'research', 'ideas', 'people', 'projects', 'tools', 'personal', 'system'}
 DEFAULT_STATUSES = {'seed', 'developing', 'draft', 'published', 'evergreen'}
 DEFAULT_AUDIENCES = {'internal', 'team', 'public'}
+
+# Acronyms almost any reader knows. Never reported. A brain adds its own in the
+# rules file's "Known acronyms" table, never here (this file belongs to the template).
+COMMON_ACRONYMS = {
+    'API', 'B2B', 'B2C', 'CEO', 'CFO', 'COO', 'CPO', 'CRM', 'CSS', 'CSV', 'CTA', 'CTO', 'FAQ',
+    'GPS', 'HTML', 'HTTP', 'HTTPS', 'ISO', 'JSON', 'KPI', 'LLM', 'MVP', 'NDA', 'NASA', 'OKR',
+    'PDF', 'ROI', 'SDK', 'SEO', 'SMB', 'SQL', 'SVP', 'TBD', 'URL', 'USA', 'USB', 'VPN', 'XML',
+}
+# Ordinary words written in capitals for emphasis, and the output status tokens.
+EMPHASIS_WORDS = {
+    'ALL', 'AND', 'ANY', 'ARE', 'BUT', 'CAN', 'DONE', 'FOR', 'HAS', 'MUST', 'NEVER', 'NEW', 'NOR',
+    'NOT', 'NOTE', 'NOW', 'ONE', 'ONLY', 'OUT', 'STOP', 'THE', 'TODO', 'TWO', 'WHY', 'YES', 'YOU',
+    'WIP', 'FINAL', 'SHARED', 'PUBLISHED', 'ARCHIVE', 'READ', 'WRITE',
+}
+ACRONYM_RX = re.compile(r'(?<![\w/.-])([A-Z][A-Z0-9]{2,7})s?(?![\w-])')
+UNANSWERED_RX = re.compile(r'^##\s*\[(\d{4}-\d{2}-\d{2})\]\s*query\s*\|\s*Unanswered:\s*(.+?)\s*$', re.I | re.M)
+LINT_ENTRY_RX = re.compile(r'^##\s*\[(\d{4}-\d{2}-\d{2})\]\s*lint\b', re.I | re.M)
 
 PLACEHOLDER_RX = re.compile(r'\{\{[A-Z][A-Z_]*\}\}')
 SETUP_RX = re.compile(r'<!--\s*SETUP\b')
@@ -257,6 +284,8 @@ class Vault:
         self.domains.add('system')
         # Optional: index sections the owner chose instead of one per domain.
         self.index_sections = table_keys(section(self.rules_text, r'^Index sections\b'))
+        # Optional: acronyms this brain's readers already know (rules file, Writing).
+        self.known_acronyms = table_keys(section(self.rules_text, r'^Known acronyms\b'))
         self.skills_mode = unquote((rfm or {}).get('skills')) or 'folder'
         self.wiki = os.path.join(root, WIKI)
         self.pages = sorted(nfc(f) for f in os.listdir(self.wiki) if f.endswith('.md'))
@@ -740,6 +769,58 @@ def check_hubs(v, inbound):
 
 # ── main ──────────────────────────────────────────────────────────────────
 
+def acronym_text(text):
+    """Prose only: no frontmatter, code, URLs or link targets."""
+    _, body = frontmatter(text)
+    body = strip_code(body if body is not None else text)
+    body = re.sub(r'https?://\S+', '', body)
+    return re.sub(r'\[\[[^\]]*\]\]', '', body)
+
+
+def check_acronyms(v):
+    """All-caps terms on ACRONYM_MIN_PAGES+ content pages that no page defines (0.2.13)."""
+    skip = COMMON_ACRONYMS | EMPHASIS_WORDS | v.known_acronyms
+    used = {}
+    for p in v.pages:
+        if p in v.system_pages:
+            continue                                   # the log and dashboards are not use
+        for m in ACRONYM_RX.finditer(acronym_text(v.text.get(p, ''))):
+            acr = m.group(1)
+            if sum(c.isalpha() for c in acr) < 2 or acr in skip:
+                continue
+            used.setdefault(acr, set()).add(p)
+    texts = [acronym_text(v.text.get(p, '')) for p in v.pages if p != 'log.md']
+    texts.append(acronym_text(v.rules_text))
+    names = [p[:-3] for p in v.pages]
+    for t in [v.text.get(p, '') for p in v.pages] + [v.rules_text]:
+        names += re.findall(r'^#{1,6}\s+(.*)$', t, re.M)
+    out = []
+    for acr, pages in sorted(used.items(), key=lambda x: (-len(x[1]), x[0])):
+        if len(pages) < ACRONYM_MIN_PAGES:
+            continue
+        word = re.compile(r'\b' + re.escape(acr) + r'\b')
+        if any(word.search(n) for n in names):
+            continue
+        a = re.escape(acr)
+        definition = re.compile(r'\*\*' + a + r's?\*\*|\(' + a + r's?\)|\b' + a + r's?\b\s*(?:\(|[—–=:]|-\s)'
+                                r'|^\|\s*\**`?' + a + r'`?\**\s*\|', re.M)
+        if any(definition.search(t) for t in texts):
+            continue
+        shown = sorted(pages)
+        more = f' and {len(shown) - 3} more' if len(shown) > 3 else ''
+        out.append(f'{acr}: on {len(shown)} pages, defined on none ({"; ".join(shown[:3])}{more}). '
+                   f'Define it where it first matters, or add it to the Known acronyms table')
+    return out
+
+
+def check_unanswered(v):
+    """Questions the brain could not answer, logged since the most recent lint (0.2.13)."""
+    log = v.text.get('log.md', '')
+    lints = [m.start() for m in LINT_ENTRY_RX.finditer(log)]
+    since = lints[-1] if lints else 0
+    return [f'{d}: {q}' for d, q in ((m.group(1), m.group(2)) for m in UNANSWERED_RX.finditer(log, since))]
+
+
 def main(argv=None):
     try:
         sys.stdout.reconfigure(errors='replace')
@@ -789,6 +870,8 @@ def main(argv=None):
         vmap = check_map(v)
         hubs = check_hubs(v, inbound)
         items = check_open_items(v)
+        acronyms = check_acronyms(v)
+        unanswered = check_unanswered(v)
     except (OSError, ValueError) as e:
         print(f'vault_check: could not read the brain: {e}', file=sys.stderr)
         return 2
@@ -809,6 +892,8 @@ def main(argv=None):
         ('Vault Map drift (judge each)', vmap),
         (f'Hubs (pages {hub_threshold(v)}+ distinct pages link to, and quiet listed hubs; judge each)', hubs),
         ('Open items (checked items to move, or an archive pass due)', items),
+        ('Undefined acronyms (on 3+ pages, defined on none; judge each)', acronyms),
+        ('Unanswered questions logged since the last lint (gaps to fill; judge each)', unanswered),
     ]
     total = sum(len(items) for _, items in sections)
     name = v.brain if v.brain and not has_placeholder(v.brain) else '(not set up yet)'
